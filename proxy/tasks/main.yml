@@ -17,19 +17,21 @@
     state: absent
     regexp: '^Acquire::http::Proxy '
 
-- name: Set APT proxy configuration
-  lineinfile:
+- name: Set APT proxy configuration block
+  blockinfile:
     path: /etc/apt/apt.conf.d/01proxy
-    line: 'Acquire::http::Proxy "{{ proxy }}";'
     create: yes
+    block: |
+      Acquire::http::Proxy "{{ http_proxy }}";
+      Acquire::https::Proxy "{{ https_proxy }}";
 
 - name: Set global environment proxy configuration
   lineinfile:
     path: /etc/environment
     line: '{{ item }}'
   loop:
-    - 'http_proxy="{{ proxy }}"'
-    - 'https_proxy="{{ proxy }}"'
+    - 'http_proxy="{{ http_proxy }}"'
+    - 'https_proxy="{{ https_proxy }}"'
     - 'no_proxy="{{ no_proxy }}"'
 
 - name: Set user-specific proxy configuration (bashrc)
@@ -37,6 +39,6 @@
     path: /etc/bash.bashrc
     line: '{{ item }}'
   loop:
-    - 'export http_proxy="{{ proxy }}"'
-    - 'export https_proxy="{{ proxy }}"'
+    - 'export http_proxy="{{ http_proxy }}"'
+    - 'export https_proxy="{{ https_proxy }}"'
     - 'export no_proxy="{{ no_proxy }}"'
