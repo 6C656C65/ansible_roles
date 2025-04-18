@@ -1,0 +1,8 @@
+---
+- name: Create login.defs
+  template:
+    src: login.defs
+    dest: /etc/login.defs
+    owner: root
+    group: root
+    mode: "0444"

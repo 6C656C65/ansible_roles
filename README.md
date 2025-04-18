@@ -14,6 +14,7 @@
    - [dns](#-dns)
    - [docker](#-docker)
    - [grub](#-grub)
+   - [logindefs](#-logindefs)
    - [ntp](#-ntp)
    - [proxy](#-proxy)
    - [sshd](#-sshd)
@@ -186,6 +187,39 @@ grub-mkpasswd-pbkdf2
   - `usb_storage`
   - `firewire_core`
   - `firewire_ohci`
+
+</details>
+
+### 📄 `logindefs`
+
+<details>
+<summary>Click to expand the <code>logindefs</code> role documentation</summary>
+
+Manages the `/etc/login.defs` file to enforce system-wide login and password policies.
+
+**✅ Features**
+
+- Deploys a custom `/etc/login.defs` file using a Jinja2 template.
+- Ensures correct permissions and ownership.
+
+**📁 Structure**
+
+```text
+logindefs/
+├── tasks/
+│   └── main.yml
+├── templates/
+│   └── login.defs
+```
+
+**📋 Tasks**
+
+- Uses a template (`login.defs`) to overwrite `/etc/login.defs`.
+- Ensures the file is owned by `root:root` with read-only permissions (`0444`).
+
+**📄 Template (`templates/login.defs`)**
+
+The `login.defs` template should define system-wide settings for login, password expiration, UID/GID ranges, and other authentication parameters.
 
 </details>
 
