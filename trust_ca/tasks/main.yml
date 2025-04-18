@@ -1,0 +1,11 @@
+---
+- name: Copy all certificates to /usr/local/share/ca-certificates/
+  copy:
+    src: "{{ item }}"
+    dest: "/usr/local/share/ca-certificates/{{ item | basename }}"
+    owner: root
+    group: root
+    mode: 0644
+  with_fileglob:
+    - "files/*.crt"
+  notify: Updating CA certificates

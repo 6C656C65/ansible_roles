@@ -1,0 +1,2 @@
+- name: Updating CA certificates
+  command: /usr/sbin/update-ca-certificates

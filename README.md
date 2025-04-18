@@ -19,6 +19,7 @@
    - [proxy](#-proxy)
    - [sshd](#-sshd)
    - [sysctl](#-sysctl)
+   - [trust_ca](#-trust_ca)
 
 ---
 
@@ -446,6 +447,47 @@ sysctl_core_dump:
 - System should support `sysctl --system` (common on systemd-based distributions)
 
 </details>
+
+### 📄 `trust_ca`
+
+<details>
+<summary>Click to expand the `trust_ca` role documentation</summary>
+
+Manages the addition of custom Certificate Authorities (CAs) to the system's trusted CA store.
+
+**✅ Features**
+
+- Copies custom `.crt` certificates to `/usr/local/share/ca-certificates/`.
+- Notifies the system to update CA certificates.
+- Ensures correct file permissions and ownership for the certificates.
+
+**📁 Structure**
+
+```text
+trust_ca/
+├── files/
+│   └── .gitkeep
+├── handlers/
+│   └── main.yml
+├── tasks/
+│   └── main.yml
+```
+
+**⚙️ Files (`files/)**
+
+The `files/` directory contains the custom `.crt` files that will be added to the trusted CA store. 
+
+**📋 Tasks**
+
+- **Copy certificates**: Copies all `.crt` files from `files/` to `/usr/local/share/ca-certificates/`.
+- **Notify CA update**: Triggers the update of the CA certificates.
+
+**🔁 Handlers**
+
+- **Updating CA certificates**: Runs the `update-ca-certificates` command to update the system's CA certificates.
+
+</details>
+
 
 ---
 
