@@ -12,6 +12,7 @@
 1. [Integration](#-integration)
 2. [Available Roles](#-available-roles)
    - [dns](#-dns)
+   - [grub](#-grub)
    - [ntp](#-ntp)
    - [proxy](#-proxy)
    - [sshd](#-sshd)
@@ -34,7 +35,7 @@ git submodule add https://github.com/6C656C65/ansible_roles roles
 ### 📄 `dns`
 
 <details>
-<summary>Click to expand the `dns` role documentation</summary>
+<summary>Click to expand the <code>dns</code> role documentation</summary>
 
 Configures the DNS settings for the system, including the domain, search domains, and nameservers.
 
@@ -78,10 +79,60 @@ nameserver: 10.0.0.254
 
 </details>
 
+### 📄 `grub`
+
+<details>
+<summary>Click to expand the <code>grub</code> role documentation</summary>
+
+Configures a GRUB password for boot-time protection and blacklists specific kernel modules to harden system security.
+
+**✅ Features**
+
+- Sets a `password_pbkdf2` in `/etc/grub.d/40_custom` to protect GRUB access.
+- Regenerates GRUB configuration using `update-grub`.
+- Blacklists USB storage and FireWire kernel modules for security.
+
+**📁 Structure**
+
+```text
+grub/
+├── defaults/
+│   └── main.yml
+├── tasks/
+│   └── main.yml
+```
+
+**⚙️ Defaults (`defaults/main.yml`)**
+
+```yaml
+grub_password: "grub.pbkdf2.sha512.10000.929D04D84DD6906946D134E7A7FB1644DB5785B8B71B9900D5B45E01B50128E66486865B2222644ACAE29778CE61161AD6680470D827B508A61458C302C5B66C.ACD515811D6CC1948F6EF89FB58881EA3670583275D3014C510C5C6478B55046FF5DDDD7669FA56451D90680ACF4968891338BD1710CCBA653433BE7B4E313B0"
+```
+
+- `grub_password`: The PBKDF2 hash for the GRUB superuser password.
+  - **Default password is** `changeme`
+  - **⚠️ It is strongly recommended to change it.**
+
+To generate a new GRUB password hash, use:
+
+```bash
+grub-mkpasswd-pbkdf2
+```
+
+**📋 Tasks**
+
+- Inserts a GRUB `superuser` and `password_pbkdf2` block into `/etc/grub.d/40_custom`.
+- Runs `update-grub` to apply the new GRUB configuration.
+- Adds the following kernel modules to the blacklist:
+  - `usb_storage`
+  - `firewire_core`
+  - `firewire_ohci`
+
+</details>
+
 ### 📄 `ntp`
 
 <details>
-<summary>Click to expand the `ntp` role documentation</summary>
+<summary>Click to expand the <code>ntp</code> role documentation</summary>
 
 Installs and configures an NTP (Network Time Protocol) server to synchronize the system time with a specified NTP server.
 
@@ -136,7 +187,7 @@ ntp_server: 10.0.0.254
 ### 📄 `proxy`
 
 <details>
-<summary>Click to expand the `proxy` role documentation</summary>
+<summary>Click to expand the <code>proxy</code> role documentation</summary>
 
 Configure system-wide and user-wide HTTP/HTTPS proxy settings for APT, environment variables, and shell configuration.
 
@@ -181,7 +232,7 @@ no_proxy: "localhost,127.0.0.1,10.0.0.0/16,192.168.0.0/16,172.16.0.0/12"
 ### 📄 `sshd`
 
 <details>
-<summary>Click to expand the `sshd` role documentation</summary>
+<summary>Click to expand the <code>sshd</code> role documentation</summary>
 
 Configure and customize the OpenSSH server (`sshd`) and enhance the login experience with an ASCII banner and system uptime.
 
@@ -247,7 +298,7 @@ motd_ascii_file: "99-ascii"
 ### 📄 `sysctl`
 
 <details>
-<summary>Click to expand the `sysctl` role documentation</summary>
+<summary>Click to expand the <code>sysctl</code> role documentation</summary>
 
 Harden kernel networking and memory behavior using persistent sysctl rules for IPv4, IPv6, and core dump settings.
 

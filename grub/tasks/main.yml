@@ -1,0 +1,23 @@
+---
+- name: Add GRUB password to /etc/grub.d/40_custom
+  ansible.builtin.blockinfile:
+    path: /etc/grub.d/40_custom
+    marker: "# {mark} ANSIBLE GRUB PASSWORD"
+    insertafter: 'exec tail -n \+3 \$0'
+    block: |
+      set superusers="admin"
+      password_pbkdf2 admin {{ grub_password }}
+
+- name: Update GRUB configuration
+  ansible.builtin.command:
+    cmd: update-grub
+
+- name: Blacklist USB storage and Firewire drivers
+  ansible.builtin.blockinfile:
+    path: /etc/modprobe.d/blacklist.conf
+    marker: "# {mark} ANSIBLE BLACKLIST"
+    create: yes
+    block: |
+      blacklist usb_storage
+      blacklist firewire_core
+      blacklist firewire_ohci
