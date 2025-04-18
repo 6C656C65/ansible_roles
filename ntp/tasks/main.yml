@@ -1,0 +1,14 @@
+---
+- name: Ensure /var/log/ntpsec directory exists
+  file:
+    path: /var/log/ntpsec
+    state: directory
+    owner: ntpsec
+    group: ntpsec
+    mode: '0755'
+
+- name: Copy ntp.conf template to /etc/ntpsec/
+  template:
+    src: ntp.conf
+    dest: /etc/ntpsec/ntp.conf
+  notify: Restart service

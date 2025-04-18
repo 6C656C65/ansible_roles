@@ -1,0 +1,24 @@
+sysctl_ipv6:
+  - { name: net.ipv6.conf.all.accept_ra, value: "0" }
+  - { name: net.ipv6.conf.default.accept_ra, value: "0" }
+  - { name: net.ipv6.conf.all.accept_redirects, value: "0" }
+  - { name: net.ipv6.conf.default.accept_redirects, value: "0" }
+  - { name: net.ipv6.conf.all.disable_ipv6, value: "1" }
+  - { name: net.ipv6.conf.default.disable_ipv6, value: "1" }
+  - { name: net.ipv6.conf.lo.disable_ipv6, value: "1" }
+
+sysctl_ipv4:
+  - { name: net.ipv4.conf.all.send_redirects, value: "0" }
+  - { name: net.ipv4.conf.default.send_redirects, value: "0" }
+  - { name: net.ipv4.conf.all.accept_source_route, value: "0" }
+  - { name: net.ipv4.conf.default.accept_source_route, value: "0" }
+  - { name: net.ipv4.conf.all.accept_redirects, value: "0" }
+  - { name: net.ipv4.conf.default.accept_redirects, value: "0" }
+  - { name: net.ipv4.conf.all.log_martians, value: "1" }
+  - { name: net.ipv4.conf.default.log_martians, value: "1" }
+  - { name: net.ipv4.icmp_echo_ignore_broadcasts, value: "1" }
+  - { name: net.ipv4.conf.all.rp_filter, value: "1" }
+  - { name: net.ipv4.conf.default.rp_filter, value: "1" }
+
+sysctl_core_dump:
+  - { name: fs.suid_dumpable, value: "0" }

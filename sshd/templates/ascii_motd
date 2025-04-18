@@ -1,0 +1,6 @@
+#!/bin/bash
+echo -e "\e[31m"
+echo -e "{{ ascii_art }}"
+echo ""
+echo -e '\e[1;36mWelcome on '"$(hostname)"' !\e[0m'
+echo -e "\e[1;36mUptime: $(uptime -p)\e[0m"

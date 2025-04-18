@@ -1,0 +1,26 @@
+---
+- name: IPv6 sysctl configuration
+  ansible.posix.sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    state: present
+  with_items: "{{ sysctl_ipv6 }}"
+  notify: Reload the sysctl configuration
+
+- name: IPv4 sysctl configuration
+  ansible.posix.sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    state: present
+  with_items: "{{ sysctl_ipv4 }}"
+  notify: Reload the sysctl configuration
+
+- name: Disable core dumps
+  ansible.builtin.sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    state: present
+    sysctl_set: yes
+    reload: yes
+  with_items: "{{ sysctl_core_dump }}"
+  notify: Reload the sysctl configuration

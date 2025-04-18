@@ -1,0 +1,9 @@
+---
+- name: Configuring DNS
+  copy:
+    dest: /etc/resolv.conf
+    content: |
+      domain {{ domain }}
+      search {{ search }}
+      nameserver {{ nameserver }}
+  notify: Restart networking service

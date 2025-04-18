@@ -1,0 +1,4 @@
+- name: Restart sshd daemon
+  service: 
+    name: sshd
+    state: restarted
