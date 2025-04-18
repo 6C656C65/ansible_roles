@@ -1,0 +1,16 @@
+---
+- name: Update apt package cache
+  apt:
+    update_cache: yes
+
+- name: Update tous les paquets à la dernière version
+  apt:
+    name: "*"
+    state: latest
+
+- name: Install required system packages
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items: "{{ packages_to_install }}"
+  notify: Purge old packages

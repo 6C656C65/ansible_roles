@@ -11,6 +11,7 @@
 
 1. [Integration](#-integration)
 2. [Available Roles](#-available-roles)
+   - [apt](#-apt)
    - [dns](#-dns)
    - [docker](#-docker)
    - [grub](#-grub)
@@ -34,6 +35,56 @@ git submodule add https://github.com/6C656C65/ansible_roles roles
 ---
 
 ## 🔧 Available Roles
+
+### 📄 `apt`
+
+<details>
+<summary>Click to expand the `apt` role documentation</summary>
+
+Manages the installation and update of system packages using `apt`.
+
+**✅ Features**
+
+- Updates the `apt` package cache to ensure the latest package information.
+- Upgrades all installed packages to the latest version.
+- Installs a predefined set of system packages.
+- Purges old packages that are no longer needed.
+
+**📁 Structure**
+
+```text
+apt/
+├── defaults/
+│   └── main.yml
+├── handlers/
+│   └── main.yml
+├── tasks/
+│   └── main.yml
+```
+
+**⚙️ Defaults (`defaults/main.yml`)**
+
+```yaml
+packages_to_install:
+  - "ntp"
+  - "openssh-server"
+  - "ca-certificates"
+```
+
+- `packages_to_install`: List of packages to be installed on the system. You can add additional packages to this list as needed.
+
+**📋 Tasks**
+
+- **Update apt package cache**: Updates the local package cache to ensure that the latest package versions are available.
+- **Upgrade all packages**: Upgrades all installed packages to the latest version available.
+- **Install required system packages**: Installs the packages specified in `packages_to_install`. This includes essential packages such as NTP, OpenSSH, and CA certificates.
+  - This task triggers the handler `Purge old packages` to clean up obsolete packages after installation.
+
+**🔁 Handlers**
+
+- **Purge old packages**: Removes packages that are no longer needed (those marked for removal) by purging them from the system.
+
+</details>
 
 ### 📄 `dns`
 

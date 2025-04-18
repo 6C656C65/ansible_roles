@@ -1,0 +1,4 @@
+packages_to_install:
+  - "ntp"
+  - "openssh-server"
+  - "ca-certificates"
