@@ -1,4 +1,11 @@
 ---
+- name: Ensure ntpsec user exists
+  user:
+    name: ntpsec
+    system: yes
+    shell: /usr/sbin/nologin
+    create_home: no
+
 - name: Ensure /var/log/ntpsec directory exists
   file:
     path: /var/log/ntpsec
