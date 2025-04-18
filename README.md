@@ -12,6 +12,7 @@
 1. [Integration](#-integration)
 2. [Available Roles](#-available-roles)
    - [dns](#-dns)
+   - [docker](#-docker)
    - [grub](#-grub)
    - [ntp](#-ntp)
    - [proxy](#-proxy)
@@ -76,6 +77,65 @@ nameserver: 10.0.0.254
 **🔁 Handlers**
 
 - `Restart networking service`: Restarts the networking service to apply the new DNS settings.
+
+</details>
+
+### 📄 `docker`
+
+<details>
+<summary>Click to expand the <code>docker</code> role documentation</summary>
+
+Installs Docker and Docker Compose, configures proxy settings, and manages user access.
+
+**✅ Features**
+
+- Installs Docker and Docker Compose packages.
+- Adds specified users to the `docker` group.
+- Configures system-wide Docker proxy settings via systemd drop-in.
+- Reloads systemd and restarts Docker when proxy settings change.
+
+**📁 Structure**
+
+```text
+docker/
+├── defaults/
+│   └── main.yml
+├── handlers/
+│   └── main.yml
+├── tasks/
+│   └── main.yml
+├── templates/
+│   └── override.conf
+```
+
+**⚙️ Defaults (`defaults/main.yml`)**
+
+```yaml
+http_proxy: "http://proxy.company.com:3128"
+https_proxy: "https://proxy.company.com:3128"
+no_proxy: "localhost,127.0.0.1,10.0.0.0/16,192.168.0.0/16,172.16.0.0/12"
+
+docker_users:
+  - user
+```
+
+- `http_proxy`: Proxy server for HTTP traffic.
+- `https_proxy`: Proxy server for HTTPS traffic.
+- `no_proxy`: Comma-separated list of addresses that bypass the proxy.
+- `docker_users`: List of users to add to the `docker` group.
+
+**📋 Tasks**
+
+- Installs `docker` and `docker-compose` using the system package manager.
+- Adds each user listed in `docker_users` to the `docker` group.
+- Creates the directory `/etc/systemd/system/docker.service.d` if it doesn't exist.
+- Applies proxy settings by templating `override.conf`.
+- Notifies handlers to reload systemd and restart Docker.
+
+**🔁 Handlers**
+
+- `Reload systemd`: Runs `systemctl daemon-reload` to apply service changes.
+- `Restart docker`: Restarts the Docker service to apply updated configuration.
 
 </details>
 

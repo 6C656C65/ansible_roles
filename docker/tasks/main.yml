@@ -1,0 +1,28 @@
+---
+- name: Install Docker
+  apt:
+    name: '{{ item.name }}'
+    state: latest
+  with_items:
+    - { name: docker }
+    - { name: docker-compose }
+
+- name: Add users to the docker group
+  user:
+    name: "{{ item }}"
+    groups: docker
+    append: yes
+  loop: "{{ docker_users }}"
+
+- name: Create the docker.service.d directory
+  file:
+    path: /etc/systemd/system/docker.service.d
+    state: directory
+
+- name: Configure the proxy
+  template:
+    src: override.conf
+    dest: /etc/systemd/system/docker.service.d/override.conf
+  notify: 
+    - Reload systemd
+    - Restart docker
