@@ -1,0 +1,39 @@
+---
+- name: Check if host-specific certificates exist
+  stat:
+    path: "{{ role_path }}/files/{{ inventory_hostname }}"
+  register: nginx_certs_present
+  delegate_to: localhost
+
+- block:
+  - name: Create necessary directories
+    file:
+      path: "{{ nginx_directory }}{{ item.name }}"
+      state: directory
+      mode: '0755'
+    with_items:
+      - { name: "/" }
+      - { name: "/certs" }
+
+  - name: Copy host-specific docker-compose.yml
+    template:
+      src: "docker-compose.yml"
+      dest: "{{ nginx_directory }}/docker-compose.yml"
+
+  - name: Copy host-specific nginx.conf
+    template:
+      src: "nginx.conf"
+      dest: "{{ nginx_directory }}/nginx.conf"
+    notify: Restart nginx docker
+
+  - name: Copy host-specific certificates
+    copy:
+      src: "{{ inventory_hostname }}/"
+      dest: "{{ nginx_directory }}/certs/"
+      mode: '0644'
+    notify: Restart nginx docker
+
+  - name: Start nginx service
+    shell: docker-compose -f {{ nginx_directory }}/docker-compose.yml up -d
+
+  when: nginx_certs_present.stat.exists

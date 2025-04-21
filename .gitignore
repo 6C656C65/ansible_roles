@@ -1,1 +1,4 @@
 trust_ca/files/*.crt
+nginx/files/*
+!nginx/files/hostA
+!nginx/files/hostB

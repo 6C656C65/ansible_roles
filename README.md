@@ -18,6 +18,7 @@
    - [fail2ban](#-fail2ban)
    - [grub](#-grub)
    - [logindefs](#-logindefs)
+   - [nginx](#-nginx)
    - [ntp](#-ntp)
    - [proxy](#-proxy)
    - [sshd](#-sshd)
@@ -369,6 +370,90 @@ logindefs/
 **📄 Template (`templates/login.defs`)**
 
 The `login.defs` template should define system-wide settings for login, password expiration, UID/GID ranges, and other authentication parameters.
+
+</details>
+
+### 📄 nginx
+
+<details>
+<summary>Click to expand the <code>nginx</code> role documentation</summary>
+
+Deploys and configures a reverse-proxy using Nginx in Docker with HTTPS support per host. The configuration is fully dynamic and defined through variables.
+
+**✅ Features**
+
+- Supports multiple hosts with different domains and backend services
+- Automatically deploys SSL certificates (privkey.pem and fullchain.pem)
+- Uses Docker Compose to manage Nginx as a container
+- Dynamically generates nginx.conf and docker-compose.yml from templates
+- Handler to restart Nginx when configuration changes
+
+**📁 Structure**
+
+```text
+nginx/
+├── defaults/
+│   └── main.yml
+├── files/
+│   └── hostX/
+│       └── domain/
+│           ├── fullchain.pem
+│           └── privkey.pem
+├── handlers/
+│   └── main.yml
+├── tasks/
+│   └── main.yml
+├── templates/
+│   ├── docker-compose.yml
+│   └── nginx.conf
+```
+
+**⚙️ Defaults (defaults/main.yml)**
+
+```yaml
+nginx_directory: /opt/cadvisor
+
+backend:
+  hostA:
+    - domain: example.local
+      network: example_net
+      backend:
+        - location: /
+          conf: |
+            proxy_pass http://backend:3000;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+...
+```
+
+You can define multiple domains per host, and each domain can contain multiple backend location blocks.
+
+**📋 Tasks**
+
+- Check if certificates exist for the current host
+- Create necessary directories for deployment
+- Render and copy host-specific docker-compose.yml and nginx.conf
+- Copy corresponding TLS certificates from files/
+- Start the Nginx service using docker-compose
+- Only runs if certificates are present for the host
+
+**🔁 Handlers**
+
+- `Restart nginx docker`: Restarts the Nginx service via docker-compose
+
+**📦 Docker Compose Template**
+
+- Exposes ports 80 and 443
+- Mounts host configs and certs
+- Supports multiple external networks as defined per backend
+
+**📄 Nginx Config Template**
+
+- Creates one server block per domain
+- Sets SSL cert paths per domain
+- Creates dynamic location blocks as configured
 
 </details>
 
