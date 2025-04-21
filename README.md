@@ -12,6 +12,7 @@
 1. [Integration](#-integration)
 2. [Available Roles](#-available-roles)
    - [apt](#-apt)
+   - [cadvisor](#-cadvisor)
    - [dns](#-dns)
    - [docker](#-docker)
    - [fail2ban](#-fail2ban)
@@ -84,6 +85,54 @@ packages_to_install:
 **🔁 Handlers**
 
 - **Purge old packages**: Removes packages that are no longer needed (those marked for removal) by purging them from the system.
+
+</details>
+
+### 📄 `cadvisor`
+
+<details>
+<summary>Click to expand the <code>cadvisor</code> role documentation</summary>
+
+Deploys and manages cAdvisor using Docker Compose to monitor container resource usage on the host system.
+
+✅ Features
+
+- Creates required directory structure for cAdvisor deployment.
+- Deploys a customizable docker-compose.yml using a Jinja2 template.
+- Starts the cAdvisor container with Docker Compose.
+- Provides a handler to restart cAdvisor if configuration changes.
+
+📁 Structure
+
+```text
+cadvisor/
+├── defaults/
+│   └── main.yml
+├── handlers/
+│   └── main.yml
+├── tasks/
+│   └── main.yml
+├── templates/
+│   └── docker-compose.yml
+```
+
+⚙️ Defaults (defaults/main.yml)
+
+```yaml
+cadvisor_directory: "/opt/cadvisor"
+```
+
+- `cadvisor_directory`: Base directory on the target system where cAdvisor will be deployed.
+
+📋 Tasks
+
+- Create required directories: Ensures the base directory for cAdvisor exists with correct permissions.
+- Copy docker-compose.yml: Renders and copies the Docker Compose file from template to the target directory. Triggers the handler to restart the service if the file is changed.
+- Start cadvisor containers: Uses docker-compose to bring up the cAdvisor service in detached mode.
+
+🔁 Handlers
+
+- `Restart cadvisor`: Restarts the cAdvisor container using docker-compose when configuration is updated.
 
 </details>
 

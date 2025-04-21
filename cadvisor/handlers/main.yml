@@ -1,0 +1,3 @@
+---
+- name: Restart cadvisor
+  shell: docker-compose -f {{ cadvisor_directory }}/docker-compose.yml restart
