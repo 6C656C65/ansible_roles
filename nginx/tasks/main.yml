@@ -1,7 +1,7 @@
 ---
 - name: Check if host-specific certificates exist
   stat:
-    path: "{{ nginx_cert_source_override | default(role_path ~ '/files/' ~ inventory_hostname) }}"
+    path: "{{ (nginx_cert_source_override | default(role_path ~ '/files')) ~ '/' ~ inventory_hostname }}/"
   register: nginx_certs_present
   delegate_to: localhost
 
@@ -28,7 +28,7 @@
 
   - name: Copy host-specific certificates
     copy:
-      src: "{{ nginx_cert_source_override | default(role_path ~ '/files/' ~ inventory_hostname) }}/"
+      src: "{{ (nginx_cert_source_override | default(role_path ~ '/files')) ~ '/' ~ inventory_hostname }}/"
       dest: "{{ nginx_directory }}/certs/"
       mode: '0644'
     notify: Restart nginx docker
