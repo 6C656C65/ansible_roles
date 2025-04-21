@@ -1,0 +1,17 @@
+---
+- name: Install Fail2Ban package
+  apt:
+    name: fail2ban
+    state: present
+    update_cache: yes
+
+- name: Ensure jail.local exists from default jail.conf
+  copy:
+    src: "{{ fail2ban_source_file }}"
+    dest: "{{ fail2ban_config_file }}"
+    remote_src: yes
+    force: no
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Restart fail2ban

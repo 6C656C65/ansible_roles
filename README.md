@@ -14,6 +14,7 @@
    - [apt](#-apt)
    - [dns](#-dns)
    - [docker](#-docker)
+   - [fail2ban](#-fail2ban)
    - [grub](#-grub)
    - [logindefs](#-logindefs)
    - [ntp](#-ntp)
@@ -189,6 +190,53 @@ docker_users:
 
 - `Reload systemd`: Runs `systemctl daemon-reload` to apply service changes.
 - `Restart docker`: Restarts the Docker service to apply updated configuration.
+
+</details>
+
+### 📄 `fail2ban`
+
+<details>
+<summary>Click to expand the <code>fail2ban</code> role documentation</summary>
+
+Configures and installs Fail2Ban to protect the system against brute-force attacks and suspicious login attempts.
+
+**✅ Features**
+
+- Installs the Fail2Ban package from the system repository.
+- Ensures jail.local exists as a safe copy of the default jail.conf.
+- Prepares the system for further custom jail configurations.
+- Sets correct file ownership and permissions for jail.local.
+
+**📁 Structure**
+
+```text
+fail2ban/
+├── defaults/
+│   └── main.yml
+├── handlers/
+│   └── main.yml
+├── tasks/
+│   └── main.yml
+```
+
+**⚙️ Defaults (`defaults/main.yml`)**
+
+```yaml
+fail2ban_config_file: /etc/fail2ban/jail.local
+fail2ban_source_file: /etc/fail2ban/jail.conf
+```
+
+- `fail2ban_config_file`: Path to the fail2ban configuration file to be used (usually jail.local).
+- `fail2ban_source_file`: Default configuration file used as the template for jail.local.
+
+**📋 Tasks**
+
+- **Install Fail2Ban package**: Installs the fail2ban package using apt and ensures the package cache is up to date.
+- **Ensure jail.local exists from default jail.conf**: Copies the default jail.conf file to jail.local to allow custom configuration while preserving upstream updates. File permissions are set to 0644 and owned by root.
+
+**🔁 Handlers**
+
+- `Restart fail2ban`: Restarts the Fail2Ban service when the configuration file is modified.
 
 </details>
 
