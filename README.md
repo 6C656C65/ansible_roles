@@ -411,7 +411,8 @@ nginx/
 **⚙️ Defaults (defaults/main.yml)**
 
 ```yaml
-nginx_directory: /opt/cadvisor
+nginx_directory: /opt/nginx
+#nginx_cert_source_override: /opt/nginx/certs
 
 backend:
   hostA:
@@ -427,6 +428,12 @@ backend:
             proxy_set_header X-Forwarded-Proto $scheme;
 ...
 ```
+
+- `nginx_directory`: Path where the Nginx configuration and Docker setup will be stored.
+- `nginx_cert_source_override` (*optional*): If defined, it overrides the default path used to copy certificates.
+
+By default, the role expects certificates under roles/nginx/files/{{ inventory_hostname }}/.
+If you want to manage certs outside the role, define this variable with an absolute path.
 
 You can define multiple domains per host, and each domain can contain multiple backend location blocks.
 

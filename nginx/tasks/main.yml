@@ -28,7 +28,7 @@
 
   - name: Copy host-specific certificates
     copy:
-      src: "{{ inventory_hostname }}/"
+      src: "{{ nginx_cert_source_override | default(role_path ~ '/files/' ~ inventory_hostname) }}/"
       dest: "{{ nginx_directory }}/certs/"
       mode: '0644'
     notify: Restart nginx docker

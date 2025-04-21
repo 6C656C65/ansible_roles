@@ -1,4 +1,5 @@
-nginx_directory: /opt/cadvisor
+nginx_directory: /opt/nginx
+#nginx_cert_source_override: /opt/nginx/certs
 
 backend:
   hostA:
