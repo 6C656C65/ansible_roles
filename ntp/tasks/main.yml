@@ -17,4 +17,4 @@
   template:
     src: ntp.conf
     dest: /etc/ntpsec/ntp.conf
-  notify: Restart service
+  notify: Restart ntp service

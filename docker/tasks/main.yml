@@ -24,8 +24,8 @@
     src: override.conf
     dest: /etc/systemd/system/docker.service.d/override.conf
   notify: 
-    - Reload systemd
-    - Restart docker
+    - Reload systemd docker
+    - Restart docker service
 
 - name: Flush handlers
   meta: flush_handlers
