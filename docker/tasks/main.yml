@@ -26,3 +26,6 @@
   notify: 
     - Reload systemd
     - Restart docker
+
+- name: Flush handlers
+  meta: flush_handlers
