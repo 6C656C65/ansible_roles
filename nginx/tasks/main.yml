@@ -1,7 +1,7 @@
 ---
 - name: Check if host-specific certificates exist
   stat:
-    path: "{{ role_path }}/files/{{ inventory_hostname }}"
+    path: "{{ nginx_cert_source_override | default(role_path ~ '/files/' ~ inventory_hostname) }}"
   register: nginx_certs_present
   delegate_to: localhost
 
