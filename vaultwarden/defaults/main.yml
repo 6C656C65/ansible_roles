@@ -1,0 +1,31 @@
+vaultwarden_directory: /opt/vaultwarden
+vaultwarden_log_file: /var/log/vaultwarden/vaultwarden.log
+vaultwarden_ca_volume: /etc/ssl/certs/example.pem:/etc/ssl/certs/example.pem
+
+vaultwarden_domain: https://vault.local
+
+#vaultwarden_admin_token:
+#vaultwarden_yubico:
+#  id:
+#  key:
+
+vaultwarden_smtp:
+  host: smtp.example.com
+  from: vaultwarden@company.com
+  port: 465
+  security: force_tls
+  username: vaultwarden@company.com
+  password: changeme
+
+vaultwarden_backup:
+  keep_days: 2
+  smtp_enable: "true"
+  mail_smtp_variables: "
+    -S smtp=smtps://smtp.example.com:465 \
+    -S smtp-auth=login \
+    -S smtp-auth-user=vaultwarden@company.com \
+    -S smtp-auth-password=changeme \
+    -S from=vaultwarden@company.com"
+  mail_to: admin@company.com
+  mail_when_success: "false"
+  mail_when_failure: "true"

@@ -1,0 +1,75 @@
+services:
+  vaultwarden:
+    image: vaultwarden/server:latest
+    container_name: vaultwarden
+    restart: unless-stopped
+    environment:
+      DOMAIN: "{{ vaultwarden_domain }}"
+{% if vaultwarden_admin_token is defined %}
+      ADMIN_TOKEN: "{{ vaultwarden_admin_token }}"
+{% endif %}
+{% if vaultwarden_yubico is defined and vaultwarden_yubico.id is defined and vaultwarden_yubico.key is defined %}
+      YUBICO_CLIENT_ID: "{{ vaultwarden_yubico.id }}"
+      YUBICO_SECRET_KEY: "{{ vaultwarden_yubico.key }}"
+{% endif %}
+      SMTP_HOST: {{ vaultwarden_smtp.host }}
+      SMTP_FROM: {{ vaultwarden_smtp.from }}
+      SMTP_PORT: {{ vaultwarden_smtp.port }}
+      SMTP_SECURITY: {{ vaultwarden_smtp.security }}
+      SMTP_USERNAME: {{ vaultwarden_smtp.username }}
+      SMTP_PASSWORD: "{{ vaultwarden_smtp.password }}"
+      LOG_FILE: "{{ vaultwarden_log_file }}"
+    volumes:
+      - vaultwarden-data:/data/
+      - {{ vaultwarden_log_file }}:/var/log/vaultwarden/vaultwarden.log
+      - /etc/resolv.conf:/etc/resolv.conf
+{% if vaultwarden_ca_volume is defined %}
+      - "{{ vaultwarden_ca_volume }}"
+{% endif %}
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      vaultwarden:
+
+  backup:
+    image: ttionya/vaultwarden-backup:latest
+    restart: unless-stopped
+    container_name: backup
+{% if vaultwarden_backup is defined %}
+    environment:
+{% if vaultwarden_backup.keep_days is defined %}
+      BACKUP_KEEP_DAYS: {{ vaultwarden_backup.keep_days | default('2') }}
+{% endif %}
+{% if vaultwarden_backup.smtp_enable is defined %}
+      MAIL_SMTP_ENABLE: "{{ vaultwarden_backup.smtp_enable }}"
+{% endif %}
+{% if vaultwarden_backup.mail_smtp_variables is defined %}
+      MAIL_SMTP_VARIABLES: "{{ vaultwarden_backup.mail_smtp_variables }}"
+{% endif %}
+{% if vaultwarden_backup.mail_to is defined %}
+      MAIL_TO: {{ vaultwarden_backup.mail_to }}
+{% endif %}
+{% if vaultwarden_backup.mail_when_success is defined %}
+      MAIL_WHEN_SUCCESS: "{{ vaultwarden_backup.mail_when_success }}"
+{% endif %}
+{% if vaultwarden_backup.mail_when_failure is defined %}
+      MAIL_WHEN_FAILURE: "{{ vaultwarden_backup.mail_when_failure }}"
+{% endif %}
+{% endif %}
+    volumes:
+      - vaultwarden-data:/bitwarden/data/
+      - vaultwarden-rclone-data:/config/
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      vaultwarden:
+
+networks:
+  vaultwarden:
+
+volumes:
+  vaultwarden-data:
+    name: vaultwarden-data
+  vaultwarden-rclone-data:
+    external: true
+    name: vaultwarden-rclone-data

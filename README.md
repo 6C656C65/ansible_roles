@@ -24,6 +24,7 @@
    - [sshd](#-sshd)
    - [sysctl](#-sysctl)
    - [trust_ca](#-trust_ca)
+   - [vaultwarden](#-vaultwarden)
 
 ---
 
@@ -728,6 +729,97 @@ The `files/` directory contains the custom `.crt` files that will be added to th
 
 </details>
 
+### 📄 `vaultwarden`
+
+<details>
+<summary>Click to expand the <code>vaultwarden</code> role documentation</summary>
+
+This role sets up Vaultwarden using Docker. It includes configuration for Vaultwarden, SMTP settings for email notifications, and backup configurations.
+
+**✅ Features**
+
+- Deploys Vaultwarden using Docker Compose
+- Configures SMTP settings for email notifications
+- Creates directories and files for Vaultwarden logs and data
+- Supports automatic backup configuration with optional email notifications
+- Provides custom CA certificate support for secure communication
+- Configures the Vaultwarden domain and admin token
+- Allows backup retention and email notifications on backup success or failure
+
+**📁 Structure**
+
+```text
+vaultwarden/
+├── defaults/
+│   └── main.yml
+├── handlers/
+│   └── main.yml
+├── tasks/
+│   └── main.yml
+├── templates/
+│   └── docker-compose.yml
+```
+
+**⚙️ Defaults (`defaults/main.yml`)**
+
+```yaml
+vaultwarden_directory: /opt/vaultwarden
+vaultwarden_log_file: /var/log/vaultwarden/vaultwarden.log
+vaultwarden_ca_volume: /etc/ssl/certs/example.pem:/etc/ssl/certs/example.pem
+
+vaultwarden_domain: https://vault.local
+
+#vaultwarden_admin_token:
+#vaultwarden_yubico:
+#  id:
+#  key:
+
+vaultwarden_smtp:
+  host: smtp.example.com
+  from: vaultwarden@company.com
+  port: 465
+  security: force_tls
+  username: vaultwarden@company.com
+  password: changeme
+
+vaultwarden_backup:
+  keep_days: 2
+  smtp_enable: "true"
+  mail_smtp_variables: "
+    -S smtp=smtps://smtp.example.com:465 \
+    -S smtp-auth=login \
+    -S smtp-auth-user=vaultwarden@company.com \
+    -S smtp-auth-password=changeme \
+    -S from=vaultwarden@company.com"
+  mail_to: admin@company.com
+  mail_when_success: "false"
+  mail_when_failure: "true"
+```
+
+- Define the directory and log file paths for Vaultwarden.
+- Configure SMTP settings for sending email notifications.
+- Set up backup retention period and email notification preferences.
+
+**📋 Tasks**
+
+- Creates the necessary Vaultwarden base directory
+- Deploys the Docker Compose configuration for Vaultwarden
+- Creates log directory and log file, ensuring proper ownership and permissions
+- Starts Vaultwarden using Docker Compose
+- Backs up Vaultwarden data and notifies if configured
+
+**🔁 Handlers**
+
+- `Restart vaultwarden`: Restarts the Vaultwarden service by restarting the Docker container using Docker Compose.
+
+**🔧 Requirements**
+
+- Docker and Docker Compose should be installed
+- The system should support Docker networking for proper operation
+- Ensure that your SMTP server is correctly configured if email notifications are enabled
+- Backup functionality relies on a pre-configured backup service, which may require specific container images (e.g., `ttionya/vaultwarden-backup`)
+
+</details>
 
 ---
 
