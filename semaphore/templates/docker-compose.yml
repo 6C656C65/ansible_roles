@@ -1,0 +1,70 @@
+services:
+  semaphore:
+    image: semaphoreui/semaphore:latest
+    container_name: semaphore
+    restart: unless-stopped
+    environment:
+      - SEMAPHORE_DB_DIALECT=bolt
+{% if semaphore.admin is defined %}
+      - SEMAPHORE_ADMIN={{ semaphore.admin }}
+{% endif %}
+{% if semaphore.admin_password is defined %}
+      - SEMAPHORE_ADMIN_PASSWORD={{ semaphore.admin_password }}
+{% endif %}
+{% if semaphore.admin_name is defined %}
+      - SEMAPHORE_ADMIN_NAME={{ semaphore.admin_name }}
+{% endif %}
+{% if semaphore.admin_email is defined %}
+      - SEMAPHORE_ADMIN_EMAIL={{ semaphore.admin_email }}
+{% endif %}
+{% if semaphore.email_sender is defined %}
+      - SEMAPHORE_EMAIL_SENDER={{ semaphore.email_sender }}
+{% endif %}
+{% if semaphore.email_host is defined %}
+      - SEMAPHORE_EMAIL_HOST={{ semaphore.email_host }}
+{% endif %}
+{% if semaphore.email_port is defined %}
+      - SEMAPHORE_EMAIL_PORT={{ semaphore.email_port }}
+{% endif %}
+{% if semaphore.email_username is defined %}
+      - SEMAPHORE_EMAIL_USERNAME={{ semaphore.email_username }}
+{% endif %}
+{% if semaphore.email_password is defined %}
+      - SEMAPHORE_EMAIL_PASSWORD={{ semaphore.email_password }}
+{% endif %}
+{% if semaphore.email_secure is defined %}
+      - SEMAPHORE_EMAIL_SECURE="{{ semaphore.email_secure }}"
+{% endif %}
+{% if semaphore.web_root is defined %}
+      - SEMAPHORE_WEB_ROOT={{ semaphore.web_root }}
+{% endif %}
+{% set proxy_envs = [] %}
+{% if http_proxy is defined %}{% set _ = proxy_envs.append('"http_proxy"') %}{% endif %}
+{% if https_proxy is defined %}{% set _ = proxy_envs.append('"https_proxy"') %}{% endif %}
+{% if no_proxy is defined %}{% set _ = proxy_envs.append('"no_proxy"') %}{% endif %}
+      - SEMAPHORE_FORWARDED_ENV_VARS=[{{ proxy_envs | join(', ') }}]
+{% if http_proxy is defined %}
+      - http_proxy={{ http_proxy }}
+{% endif %}
+{% if https_proxy is defined %}
+      - https_proxy={{ https_proxy }}
+{% endif %}
+{% if no_proxy is defined %}
+      - no_proxy={{ no_proxy }}
+{% endif %}
+    volumes:
+      - semaphore-data:/var/lib/semaphore
+      - semaphore-config:/etc/semaphore
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      semaphore:
+
+networks:
+  semaphore:
+
+volumes:
+  semaphore-data:
+    name: semaphore-data
+  semaphore-config:
+    name: semaphore-config

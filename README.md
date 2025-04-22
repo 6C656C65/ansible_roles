@@ -22,6 +22,7 @@
    - [ntp](#-ntp)
    - [privatebin](#-privatebin)
    - [proxy](#-proxy)
+   - [semaphore](#-semaphore)
    - [sshd](#-sshd)
    - [sysctl](#-sysctl)
    - [trust_ca](#-trust_ca)
@@ -638,6 +639,78 @@ no_proxy: "localhost,127.0.0.1,10.0.0.0/16,192.168.0.0/16,172.16.0.0/12"
 - Adds updated proxy configuration for APT
 - Updates global `/etc/environment` with proxy variables
 - Adds export lines in `/etc/bash.bashrc` for interactive shells
+
+</details>
+
+### 📄 `semaphore`
+
+<details>
+<summary>Click to expand the <code>semaphore</code> role documentation</summary>
+
+Installs and configures [Semaphore](https://github.com/ansible-semaphore/semaphore), a modern open-source Ansible UI and dashboard, using Docker Compose.
+
+**✅ Features**
+
+- Creates the directory structure for Semaphore
+- Deploys a templated `docker-compose.yml` with configuration variables
+- Starts Semaphore using Docker Compose
+- Supports proxy configuration and email notifications
+- Uses the embedded BoltDB database for simplicity
+
+**📁 Structure**
+
+```text
+semaphore/
+├── defaults/
+│   └── main.yml
+├── handlers/
+│   └── main.yml
+├── tasks/
+│   └── main.yml
+├── templates/
+│   └── docker-compose.yml
+```
+
+**⚙️ Defaults (`defaults/main.yml`)**
+
+```yaml
+semaphore_directory: /opt/semaphore
+
+semaphore:
+  admin: admin
+  admin_password: changeme
+  admin_name: Admin
+  admin_email: admin@company.com
+  email_sender: semaphore@company.com
+  email_host: smtp.company.com
+  email_port: 465
+  email_username: semaphore@company.com
+  email_password: changeme
+  email_secure: "True"
+  web_root: "https://semaphore.company.com"
+
+http_proxy: "http://proxy.company:3128"
+https_proxy: "https://proxy.company:3128"
+no_proxy: "localhost,127.0.0.1,10.0.0.0/16,192.168.0.0/16,172.16.0.0/12"
+```
+
+- `semaphore_directory`: Root path for the Semaphore installation.
+- `semaphore`: Dictionary of admin credentials and email configuration for Semaphore.
+- `http_proxy`, `https_proxy`, `no_proxy`: Optional proxy settings for container environment.
+
+**📋 Tasks**
+
+- Creates the base directory for Semaphore with appropriate permissions
+- Deploys the `docker-compose.yml` file using Jinja2 templating
+- Launches Semaphore using `docker-compose up -d`
+
+**📝 Templates**
+
+- `templates/docker-compose.yml`: Defines the Semaphore container, volumes, environment variables, and proxy settings
+
+**🔧 Requirements**
+
+- Docker and Docker Compose must be installed on the target machine
 
 </details>
 

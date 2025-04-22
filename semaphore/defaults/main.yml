@@ -1,0 +1,18 @@
+semaphore_directory: /opt/semaphore
+
+semaphore:
+  admin: admin
+  admin_password: changeme
+  admin_name: Admin
+  admin_email: admin@company.com
+  email_sender: semaphore@company.com
+  email_host: smtp.company.com
+  email_port: 465
+  email_username: semaphore@company.com
+  email_password: changeme
+  email_secure: "True"
+  web_root: "https://semaphore.company.com"
+
+http_proxy: "http://proxy.company:3128"
+https_proxy: "https://proxy.company:3128"
+no_proxy: "localhost,127.0.0.1,10.0.0.0/16,192.168.0.0/16,172.16.0.0/12"
