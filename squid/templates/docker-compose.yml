@@ -1,0 +1,26 @@
+services:
+  squid:
+    image: ubuntu/squid:latest
+    container_name: squid
+    restart: unless-stopped
+    environment:
+      TZ: {{ squid.timezone }}
+    ports:
+      - {{ squid.port }}
+    volumes:
+{% if squid.log_file_volume is defined %}
+      - {{ squid.log_file_volume }}
+{% endif %}
+      - squid-cache:/var/spool/squid
+      - ./squid:/etc/squid/
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      squid:
+
+networks:
+  squid:
+
+volumes:
+  squid-cache:
+    name: squid-cache

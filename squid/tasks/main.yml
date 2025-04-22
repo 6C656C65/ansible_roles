@@ -1,0 +1,36 @@
+---
+- name: Create Squid base directory
+  file:
+    path: "{{ squid_directory }}{{ item.name }}"
+    state: directory
+    mode: '0755'
+  with_items:
+    - { name: "/" }
+
+- name: Create log directory for Squid
+  file:
+    path: "{{ squid.log_file_volume.split(':')[0] | dirname }}"
+    state: directory
+    mode: '0755'
+  when: squid.log_file_volume is defined
+
+- name: Create Squid access log file
+  file:
+    path: "{{ squid.log_file_volume.split(':')[0] }}"
+    state: touch
+    mode: '0777'
+  when: squid.log_file_volume is defined
+
+- name: Deploy docker-compose configuration
+  template:
+    src: docker-compose.yml
+    dest: "{{ squid_directory }}/docker-compose.yml"
+
+- name: Deploy squid configuration
+  copy:
+    src: "{{ (squid_conf_source_override | default(role_path ~ '/files')) ~ '/' }}"
+    dest: "{{ squid_directory }}/squid"
+  notify: Reload squid configuration
+  
+- name: Start service
+  shell: docker-compose -f {{ squid_directory }}/docker-compose.yml up -d

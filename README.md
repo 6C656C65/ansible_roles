@@ -23,6 +23,7 @@
    - [privatebin](#-privatebin)
    - [proxy](#-proxy)
    - [semaphore](#-semaphore)
+   - [squid](#-squid)
    - [sshd](#-sshd)
    - [sysctl](#-sysctl)
    - [trust_ca](#-trust_ca)
@@ -707,6 +708,79 @@ no_proxy: "localhost,127.0.0.1,10.0.0.0/16,192.168.0.0/16,172.16.0.0/12"
 **📝 Templates**
 
 - `templates/docker-compose.yml`: Defines the Semaphore container, volumes, environment variables, and proxy settings
+
+**🔧 Requirements**
+
+- Docker and Docker Compose must be installed on the target machine
+
+</details>
+
+### 📄 `squid`
+
+<details>
+<summary>Click to expand the <code>squid</code> role documentation</summary>
+
+Installs and configures [Squid](http://www.squid-cache.org/), a caching proxy for the web, supporting HTTP, HTTPS, and FTP, using Docker Compose.
+
+**✅ Features**
+
+- Creates the directory structure for Squid
+- Deploys a templated `docker-compose.yml` with configuration variables
+- Supports optional log volume mapping
+- Copies Squid configuration and IP/domain whitelist files
+- Starts Squid using Docker Compose
+- Reloads Squid when configuration is updated
+
+**📁 Structure**
+
+```text
+squid/
+├── defaults/
+│   └── main.yml
+├── files/
+│   ├── lan.txt
+│   └── squid.conf
+├── handlers/
+│   └── main.yml
+├── tasks/
+│   └── main.yml
+├── templates/
+│   └── docker-compose.yml
+```
+
+**⚙️ Defaults (`defaults/main.yml`)**
+
+```yaml
+squid_directory: /opt/squid
+# squid_conf_source_override: /opt/squid/conf
+
+squid:
+  port: 3128:3128
+  timezone: "UTC"
+#  log_file_volume: /var/log/squid/access.log:/var/log/squid/access.log
+```
+
+- `squid_directory`: Root path for the Squid deployment.
+- `squid.port`: Port mapping for the proxy container.
+- `squid.timezone`: Timezone set in the container.
+- `squid.log_file_volume`: (Optional) Path to bind mount the access log file.
+- `squid_conf_source_override`: (Optional) Path override for Squid config sources.
+
+**📋 Tasks**
+
+- Creates the base and log directories if needed
+- Touches the access log file with correct permissions (if defined)
+- Deploys the `docker-compose.yml` using Jinja2 templating
+- Copies `squid.conf` and `lan.txt` configuration files
+- Starts Squid with `docker-compose up -d`
+
+**📝 Templates**
+
+- `templates/docker-compose.yml`: Defines the Squid container, volumes, environment variables, and network
+
+**🔁 Handlers**
+
+- `Reload squid configuration`: Runs `squid -k reconfigure` inside the container to reload the config
 
 **🔧 Requirements**
 

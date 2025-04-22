@@ -1,0 +1,7 @@
+squid_directory: /opt/squid
+#squid_conf_source_override: /opt/squid/conf
+
+squid:
+  port: 3128:3128
+  timezone: "UTC"
+#  log_file_volume: /var/log/squid/access.log:/var/log/squid/access.log
