@@ -1,0 +1,21 @@
+---
+- name: Create Privatebin base directory
+  file:
+    path: "{{ privatebin_directory }}{{ item.name }}"
+    state: directory
+    mode: '0755'
+  with_items:
+    - { name: "/" }
+
+- name: Deploy docker-compose configuration
+  template:
+    src: docker-compose.yml
+    dest: "{{ privatebin_directory }}/docker-compose.yml"
+  notify: Restart privatebin
+
+- name: Deploy privatebin configuration
+  template: src=conf.php dest={{ privatebin_directory }}/
+  notify: Restart privatebin
+
+- name: Start privatebin
+  shell: docker-compose -f {{ privatebin_directory }}/docker-compose.yml up -d

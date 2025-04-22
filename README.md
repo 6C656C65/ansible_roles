@@ -20,6 +20,7 @@
    - [logindefs](#-logindefs)
    - [nginx](#-nginx)
    - [ntp](#-ntp)
+   - [privatebin](#-privatebin)
    - [proxy](#-proxy)
    - [sshd](#-sshd)
    - [sysctl](#-sysctl)
@@ -517,6 +518,81 @@ ntp_server: 10.0.0.254
 **🔧 Requirements**
 
 - The `ntp` or `ntpsec` service must be installed on the target machine.
+
+</details>
+
+### 📄 `privatebin`
+
+<details>
+<summary>Click to expand the <code>privatebin</code> role documentation</summary>
+
+Installs and configures [PrivateBin](https://privatebin.info/), a minimalist, open-source online pastebin where the server has zero knowledge of pasted data.
+
+**✅ Features**
+
+- Creates the PrivateBin directory structure
+- Deploys configuration files (`conf.php`, `docker-compose.yml`) from templates
+- Starts PrivateBin via Docker Compose
+- Automatically restarts the container when configuration changes
+
+**📁 Structure**
+
+```text
+privatebin/
+├── defaults/
+│   └── main.yml
+├── handlers/
+│   └── main.yml
+├── tasks/
+│   └── main.yml
+├── templates/
+│   ├── conf.php
+│   └── docker-compose.yml
+```
+
+**⚙️ Defaults (`defaults/main.yml`)**
+
+```yaml
+privatebin_directory: /opt/privatebin
+
+privatebin:
+  name: "Company - PrivateBin"
+  enable_password: true
+  enable_fileupload: false
+  burnafterreadingselected: true
+  defaultformatter: "plaintext"
+  sizelimit: 10485760
+  templateselection: false
+  languageselection: false
+  languagedefault: "en"
+  expire_default: "1week"
+  traffic_limit: 10
+  traffic_exempted: "10.0.0.0/24"
+  traffic_creators: "10.0.0.0/24"
+```
+
+- `privatebin_directory`: Root path for the PrivateBin installation.
+- `privatebin`: Configuration dictionary used in the template `conf.php`.
+
+**📋 Tasks**
+
+- Creates the PrivateBin directory at the specified location
+- Deploys `docker-compose.yml` and `conf.php` using Jinja2 templates
+- Launches the PrivateBin container using Docker Compose
+- Notifies a handler to restart the container if needed
+
+**📝 Templates**
+
+- `templates/conf.php`: PrivateBin main configuration file
+- `templates/docker-compose.yml`: Defines the containerized PrivateBin service and its persistent volume
+
+**🔁 Handlers**
+
+- `Restart privatebin`: Restarts the container using Docker Compose after any configuration change
+
+**🔧 Requirements**
+
+- Docker and Docker Compose must be installed on the target machine
 
 </details>
 

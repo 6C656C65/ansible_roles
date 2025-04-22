@@ -1,0 +1,17 @@
+services:
+  privatebin:
+    image: privatebin/nginx-fpm-alpine:latest
+    container_name: privatebin
+    restart: unless-stopped
+    volumes:
+      - privatebin-data:/srv/data
+      - ./conf.php:/srv/cfg/conf.php:ro
+    networks:
+      privatebin:
+
+networks:
+  privatebin:
+
+volumes:
+  privatebin-data:
+    name: privatebin-data

@@ -1,0 +1,2 @@
+- name: Restart privatebin
+  shell: docker-compose -f {{ privatebin_directory }}/docker-compose.yml restart
