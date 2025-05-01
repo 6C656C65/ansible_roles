@@ -1,0 +1,12 @@
+---
+- name: Retrieve the latest commit
+  shell: git log -1 --format="%h %ci"
+  register: git_version
+  delegate_to: localhost
+
+- name: Write to the machine
+  copy:
+    content: |
+      Commit id : "{{ git_version.stdout.split(' ')[0] }}"
+      Date : "{{ git_version.stdout.split(' ')[1] }}"
+    dest: "{{ version_path }}"

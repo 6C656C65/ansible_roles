@@ -30,6 +30,7 @@
    - [trust_ca](#-trust_ca)
    - [users](#-users)
    - [vaultwarden](#-vaultwarden)
+   - [version](#-version)
 
 ---
 
@@ -1155,6 +1156,44 @@ vaultwarden_backup:
 - The system should support Docker networking for proper operation
 - Ensure that your SMTP server is correctly configured if email notifications are enabled
 - Backup functionality relies on a pre-configured backup service, which may require specific container images (e.g., `ttionya/vaultwarden-backup`)
+
+</details>
+
+### 📄 `version`
+
+<details>
+<summary>Click to expand the <code>version</code> role documentation</summary>
+
+This role retrieves the latest Git commit information and writes it to a specified file on the target machine. It is useful for tracking the current version of the application or system by storing the commit ID and the corresponding date.
+
+**✅ Features**
+
+* Fetches the latest Git commit hash and the commit date using `git log -1`.
+* Writes the commit ID and date to a specified file on the target machine.
+* Helps to keep track of the current version of the system or application.
+
+**📁 Structure**
+
+```text
+version/
+├── defaults/
+│   └── main.yml
+├── tasks/
+│   └── main.yml
+```
+
+**⚙️ Defaults (`defaults/main.yml`)**
+
+```yaml
+version_path: /etc/version.txt
+```
+
+* `version_path`: The file path where the commit details will be stored (default: `/etc/version.txt`).
+
+**📋 Tasks**
+
+* **Retrieve the latest commit**: Uses the `git log` command to retrieve the latest commit hash and date.
+* **Write to the machine**: Writes the commit ID and date into the specified file (`version_path`).
 
 </details>
 
