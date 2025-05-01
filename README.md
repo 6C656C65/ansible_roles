@@ -17,6 +17,7 @@
    - [docker](#-docker)
    - [fail2ban](#-fail2ban)
    - [grub](#-grub)
+   - [iptables](#-iptables)
    - [logindefs](#-logindefs)
    - [nginx](#-nginx)
    - [ntp](#-ntp)
@@ -341,6 +342,64 @@ grub-mkpasswd-pbkdf2
   - `usb_storage`
   - `firewire_core`
   - `firewire_ohci`
+
+</details>
+
+### 📄 `iptables`
+
+<details>
+<summary>Click to expand the <code>iptables</code> role documentation</summary>
+
+Configures and manages firewall rules using `iptables` to secure the system. This role allows you to define custom firewall rules, set default policies, log blocked traffic, and persist the rules across reboots.
+
+**✅ Features**
+
+* Sets the default policy for incoming traffic to `ACCEPT` and later switches it to `DROP`.
+* Adds custom firewall rules from a predefined list with conditions.
+* Logs blocked incoming traffic for monitoring purposes.
+* Saves the `iptables` rules to a persistent configuration file.
+
+**📁 Structure**
+
+```text
+iptables/
+├── defaults/
+│   └── main.yml
+├── tasks/
+│   └── main.yml
+```
+
+**⚙️ Defaults (`defaults/main.yml`)**
+
+```yaml
+iptables_rules:
+  - { description: "Allow HTTP 80/tcp from anywhere", port: 80, proto: tcp }
+  - { description: "Allow DNS 53/udp from anywhere", port: 53, proto: udp }
+  - { description: "Allow SSH 22/tcp from firewall", port: 22, proto: tcp, source: "10.0.0.254" }
+  - { description: "Allow SNMP 162/udp on specific interface", port: 162, proto: udp, interface: "ens18" }
+  - { description: "Allow LDAP 389/tcp on specific host", port: 389, proto: tcp, condition: "{{inventory_hostname != 'hostA'}}" }
+  - { description: "Established connections", match: conntrack, ctstate: "ESTABLISHED,RELATED" }
+```
+
+* `iptables_rules`: A list of firewall rules with their description, port, protocol, source IP, and conditions (if any).
+
+  * **`port`**: Port number for the rule.
+  * **`proto`**: Protocol (TCP or UDP).
+  * **`source`**: Source IP address for the rule (optional).
+  * **`condition`**: A condition to apply the rule (optional).
+  * **`match`** and **`ctstate`**: Used for connection tracking states (optional).
+  * **`interface`**: The network interface (optional).
+
+**📋 Tasks**
+
+* **Set default policy to ACCEPT**: Sets the default policy for incoming traffic to `ACCEPT`.
+* **Flush existing rules**: Clears any existing `iptables` rules in the `INPUT` chain.
+* **Add IPtables rules**: Loops through the `iptables_rules` list and applies each rule to the `INPUT` chain.
+* **Log blocked traffic**: Logs any blocked traffic on the `INPUT` chain with the prefix `Blocked Input Traffic`.
+* **Set default policy to DROP**: Sets the default policy for incoming traffic to `DROP` to block all traffic except the allowed rules.
+* **Save iptables rules**: Persists the firewall rules by saving them to `/etc/iptables/rules.v4`.
+
+This role applies firewall rules and logs blocked traffic as per the configuration defined in `defaults/main.yml`.
 
 </details>
 

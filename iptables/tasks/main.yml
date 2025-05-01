@@ -1,0 +1,41 @@
+---
+- name: Set default policy to ACCEPT
+  iptables:
+    chain: INPUT
+    policy: ACCEPT
+
+- name: Flush existing rules
+  iptables:
+    flush: yes
+    chain: INPUT
+
+- name: Add IPtables rules from the list
+  iptables:
+    chain: INPUT
+    destination_port: "{{ item.port | default(omit) }}"
+    protocol: "{{ item.proto | default(omit) }}"
+    match: "{{ item.match | default(omit) }}"
+    ctstate: "{{ item.ctstate | default(omit) }}"
+    source: "{{ item.source | default(omit) }}"
+    in_interface: "{{ item.interface | default(omit) }}"
+    jump: ACCEPT
+  loop: "{{ iptables_rules }}"
+  when: item.condition is not defined or item.condition | bool
+  loop_control:
+    label: "{{ item.description }}"
+
+- name: Log blocked traffic
+  iptables:
+    chain: INPUT
+    jump: LOG
+    log_prefix: "Blocked Input Traffic: "
+    log_level: "info"
+    state: present
+
+- name: Set default policy to DROP
+  iptables:
+    chain: INPUT
+    policy: DROP
+
+- name: Save iptables rules
+  shell: iptables-save > /etc/iptables/rules.v4
