@@ -28,6 +28,7 @@
    - [sshd](#-sshd)
    - [sysctl](#-sysctl)
    - [trust_ca](#-trust_ca)
+   - [users](#-users)
    - [vaultwarden](#-vaultwarden)
 
 ---
@@ -1008,6 +1009,60 @@ The `files/` directory contains the custom `.crt` files that will be added to th
 **🔁 Handlers**
 
 - **Updating CA certificates**: Runs the `update-ca-certificates` command to update the system's CA certificates.
+
+</details>
+
+### 📄 `users`
+
+<details>
+<summary>Click to expand the <code>users</code> role documentation</summary>
+
+This role is used to configure the Ansible and root user accounts on Debian-based systems. It generates secure, random passwords for the users and updates their credentials accordingly.
+
+**✅ Features**
+
+- Changes the password for the `ansible` user with a secure password hash.
+- Generates a random password for the `root` user with configurable length.
+- Displays the newly generated root password for reference.
+
+**📁 Structure**
+
+```text
+users/
+├── defaults/
+│   └── main.yml
+├── tasks/
+│   └── main.yml
+````
+
+**⚙️ Defaults (`defaults/main.yml`)**
+
+```yaml
+before_setup_ansible_ssh_pass: "changeme"
+before_setup_ansible_become_pass: "changeme"
+password_length: 15
+```
+
+* `before_setup_ansible_ssh_pass`: The initial SSH password for the `ansible` user (before setting the actual secure password).
+* `before_setup_ansible_become_pass`: The initial `become` password for `ansible` user (before setting the actual secure password).
+* `password_length`: Defines the length of the generated random password for the `root` user (default is 15 characters).
+
+**📋 Tasks**
+
+1. **Change the Ansible user password**
+   Updates the `ansible` user's password to a secure hash stored in the `vault_ansible_password` variable.
+
+2. **Generate a random password**
+   Creates a secure random password for the `root` user, with a length defined by `password_length`.
+
+3. **Set the generated password in a variable**
+   Stores the generated password for the `root` user in the `my_pass` variable.
+
+4. **Change the root user password**
+   Updates the `root` user's password to the newly generated password, securely hashed.
+
+5. **Display the generated root password**
+   Outputs the newly generated `root` password to the debug output for reference.
 
 </details>
 

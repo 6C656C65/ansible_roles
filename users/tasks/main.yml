@@ -1,0 +1,25 @@
+---
+- name: Change the Ansible user password
+  ansible.builtin.user:
+    name: ansible
+    password: "{{ vault_ansible_password | password_hash('sha512') }}"
+  vars:
+    ansible_ssh_pass: "{{ before_setup_ansible_ssh_pass }}"
+    ansible_become_pass: "{{ before_setup_ansible_become_pass }}"
+
+- name: Generate a random password
+  set_fact:
+    pwd_alias: "{{ lookup('password', '/dev/null length={{ password_length }} chars=ascii_letters') }}"
+
+- name: Set the generated password in a variable
+  set_fact:
+    my_pass: "{{ pwd_alias }}"
+
+- name: Change the root user password
+  ansible.builtin.user:
+    name: root
+    password: "{{ my_pass | password_hash('sha512') }}"
+
+- name: Display the generated root password
+  ansible.builtin.debug:
+    msg: "The new root password is: {{ my_pass }}"
