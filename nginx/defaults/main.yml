@@ -1,20 +1,20 @@
 nginx_directory: /opt/nginx
-#nginx_cert_source_override: /opt/nginx/certs
+# nginx_cert_source_override: /opt/nginx/certs
 
 backend:
   hostA:
     - domain: example.local
       network: example_net
-      backend: 
+      backend:
         - location: /
-          conf: | 
+          conf: |
             proxy_pass http://backend:3000;
             proxy_set_header Host $host;
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_set_header X-Forwarded-Proto $scheme;
         - location: /api/ws
-          conf: | 
+          conf: |
             proxy_pass http://backend:3000/api/ws;
             proxy_http_version 1.1;
             proxy_set_header Upgrade $http_upgrade;
@@ -22,9 +22,9 @@ backend:
             proxy_set_header Origin "";
     - domain: example2.local
       network: example2_net
-      backend: 
+      backend:
         - location: /
-          conf: | 
+          conf: |
             proxy_pass http://backend2:3000;
             proxy_set_header Host $host;
             proxy_set_header X-Real-IP $remote_addr;
@@ -33,9 +33,9 @@ backend:
   hostB:
     - domain: example3.local
       network: example3_net
-      backend: 
+      backend:
         - location: /
-          conf: | 
+          conf: |
             proxy_pass http://backend3:3000;
             proxy_set_header Host $host;
             proxy_set_header X-Real-IP $remote_addr;

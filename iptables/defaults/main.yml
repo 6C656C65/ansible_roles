@@ -3,5 +3,5 @@ iptables_rules:
   - { description: "Allow DNS 53/udp from anywhere", port: 53, proto: udp }
   - { description: "Allow SSH 22/tcp from firewall", port: 22, proto: tcp, source: "10.0.0.254" }
   - { description: "Allow SNMP 162/udp on specific interface", port: 162, proto: udp, interface: "ens18" }
-  - { description: "Allow LDAP 389/tcp on specific host", port: 389, proto: tcp, condition: "{{inventory_hostname != 'hostA'}}" }
+  - { description: "Allow LDAP 389/tcp on specific host", port: 389, proto: tcp, condition: "{{ inventory_hostname != 'hostA' }}" }
   - { description: "Established connections", match: conntrack, ctstate: "ESTABLISHED,RELATED" }

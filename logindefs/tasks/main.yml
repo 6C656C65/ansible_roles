@@ -1,6 +1,6 @@
 ---
 - name: Create login.defs
-  template:
+  ansible.builtin.template:
     src: login.defs
     dest: /etc/login.defs
     owner: root

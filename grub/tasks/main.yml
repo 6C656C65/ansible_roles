@@ -11,13 +11,18 @@
 - name: Update GRUB configuration
   ansible.builtin.command:
     cmd: update-grub
+  changed_when: false
 
 - name: Blacklist USB storage and Firewire drivers
   ansible.builtin.blockinfile:
     path: /etc/modprobe.d/blacklist.conf
     marker: "# {mark} ANSIBLE BLACKLIST"
-    create: yes
+    create: true
     block: |
       blacklist usb_storage
       blacklist firewire_core
       blacklist firewire_ohci
+    mode: '0644'
+
+  notify:
+    - Set correct permissions on blacklist.conf

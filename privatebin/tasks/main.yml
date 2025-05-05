@@ -1,6 +1,6 @@
 ---
 - name: Create Privatebin base directory
-  file:
+  ansible.builtin.file:
     path: "{{ privatebin_directory }}{{ item.name }}"
     state: directory
     mode: '0755'
@@ -8,14 +8,21 @@
     - { name: "/" }
 
 - name: Deploy docker-compose configuration
-  template:
+  ansible.builtin.template:
     src: docker-compose.yml
     dest: "{{ privatebin_directory }}/docker-compose.yml"
+    mode: '0644'
   notify: Restart privatebin
 
 - name: Deploy privatebin configuration
-  template: src=conf.php dest={{ privatebin_directory }}/
+  ansible.builtin.template:
+    src: conf.php
+    dest: "{{ privatebin_directory }}/"
+    mode: '0644'
   notify: Restart privatebin
 
 - name: Start privatebin
-  shell: docker-compose -f {{ privatebin_directory }}/docker-compose.yml up -d
+  ansible.builtin.command: docker-compose up -d
+  args:
+    chdir: "{{ privatebin_directory }}"
+  changed_when: false

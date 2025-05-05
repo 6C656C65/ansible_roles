@@ -1,16 +1,16 @@
 ---
 - name: Set default policy to ACCEPT
-  iptables:
+  ansible.builtin.iptables:
     chain: INPUT
     policy: ACCEPT
 
 - name: Flush existing rules
-  iptables:
-    flush: yes
+  ansible.builtin.iptables:
+    flush: true
     chain: INPUT
 
 - name: Add IPtables rules from the list
-  iptables:
+  ansible.builtin.iptables:
     chain: INPUT
     destination_port: "{{ item.port | default(omit) }}"
     protocol: "{{ item.proto | default(omit) }}"
@@ -25,7 +25,7 @@
     label: "{{ item.description }}"
 
 - name: Log blocked traffic
-  iptables:
+  ansible.builtin.iptables:
     chain: INPUT
     jump: LOG
     log_prefix: "Blocked Input Traffic: "
@@ -33,9 +33,10 @@
     state: present
 
 - name: Set default policy to DROP
-  iptables:
+  ansible.builtin.iptables:
     chain: INPUT
     policy: DROP
 
 - name: Save iptables rules
-  shell: iptables-save > /etc/iptables/rules.v4
+  ansible.builtin.shell: iptables-save > /etc/iptables/rules.v4
+  changed_when: false

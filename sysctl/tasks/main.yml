@@ -20,7 +20,7 @@
     name: "{{ item.name }}"
     value: "{{ item.value }}"
     state: present
-    sysctl_set: yes
-    reload: yes
+    sysctl_set: true
+    reload: true
   with_items: "{{ sysctl_core_dump }}"
   notify: Reload the sysctl configuration

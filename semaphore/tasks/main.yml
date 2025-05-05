@@ -1,6 +1,6 @@
 ---
 - name: Create Semaphore base directory
-  file:
+  ansible.builtin.file:
     path: "{{ semaphore_directory }}{{ item.name }}"
     state: directory
     owner: "1001"
@@ -10,9 +10,12 @@
     - { name: "/" }
 
 - name: Deploy docker-compose configuration
-  template:
+  ansible.builtin.template:
     src: docker-compose.yml
     dest: "{{ semaphore_directory }}/docker-compose.yml"
 
 - name: Start semaphore
-  shell: docker-compose -f {{ semaphore_directory }}/docker-compose.yml up -d
+  ansible.builtin.command: docker-compose up -d
+  args:
+    chdir: "{{ semaphore_directory }}"
+  changed_when: false

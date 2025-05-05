@@ -1,4 +1,4 @@
 - name: Restart ntp service
-  service: 
+  ansible.builtin.service:
     name: ntp
     state: restarted

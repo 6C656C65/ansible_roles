@@ -1,32 +1,33 @@
 ---
 - name: Remove old proxy lines from bashrc
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/bash.bashrc
     state: absent
     regexp: '^export (http_proxy|https_proxy|no_proxy)='
 
 - name: Remove old proxy lines from /etc/environment
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/environment
     state: absent
     regexp: '^(http_proxy|https_proxy|no_proxy)='
 
 - name: Remove old APT proxy if it exists
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/apt/apt.conf.d/01proxy
     state: absent
     regexp: '^Acquire::http::Proxy '
 
 - name: Set APT proxy configuration block
-  blockinfile:
+  ansible.builtin.blockinfile:
     path: /etc/apt/apt.conf.d/01proxy
-    create: yes
+    create: true
+    mode: '0644'
     block: |
       Acquire::http::Proxy "{{ http_proxy }}";
       Acquire::https::Proxy "{{ https_proxy }}";
 
 - name: Set global environment proxy configuration
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/environment
     line: '{{ item }}'
   loop:
@@ -35,7 +36,7 @@
     - 'no_proxy="{{ no_proxy }}"'
 
 - name: Set user-specific proxy configuration (bashrc)
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/bash.bashrc
     line: '{{ item }}'
   loop:

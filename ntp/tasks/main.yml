@@ -1,12 +1,12 @@
 ---
 - name: Start ntpsec service to initialize system user
-  service:
+  ansible.builtin.service:
     name: ntpsec
     state: started
     enabled: true
 
 - name: Ensure /var/log/ntpsec directory exists
-  file:
+  ansible.builtin.file:
     path: /var/log/ntpsec
     state: directory
     owner: ntpsec
@@ -14,7 +14,8 @@
     mode: '0755'
 
 - name: Copy ntp.conf template to /etc/ntpsec/
-  template:
+  ansible.builtin.template:
     src: ntp.conf
     dest: /etc/ntpsec/ntp.conf
+    mode: '0644'
   notify: Restart ntp service
