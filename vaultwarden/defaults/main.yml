@@ -4,10 +4,10 @@ vaultwarden_ca_volume: /etc/ssl/certs/example.pem:/etc/ssl/certs/example.pem
 
 vaultwarden_domain: https://vault.local
 
-#vaultwarden_admin_token:
-#vaultwarden_yubico:
-#  id:
-#  key:
+# vaultwarden_admin_token:
+# vaultwarden_yubico:
+  # id:
+  # key:
 
 vaultwarden_smtp:
   host: smtp.example.com

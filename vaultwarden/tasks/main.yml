@@ -1,6 +1,6 @@
 ---
 - name: Create Vaultwarden base directory
-  file:
+  ansible.builtin.file:
     path: "{{ vaultwarden_directory }}{{ item.name }}"
     state: directory
     mode: '0755'
@@ -8,12 +8,13 @@
     - { name: "/" }
 
 - name: Deploy docker-compose configuration
-  template:
+  ansible.builtin.template:
     src: docker-compose.yml
     dest: "{{ vaultwarden_directory }}/docker-compose.yml"
+    mode: '0644'
 
 - name: Create log directory for Vaultwarden
-  file:
+  ansible.builtin.file:
     path: "{{ vaultwarden_log_file | dirname }}"
     state: directory
     owner: "1000"
@@ -22,7 +23,7 @@
   notify: Restart vaultwarden
 
 - name: Create Vaultwarden log file
-  file:
+  ansible.builtin.file:
     path: "{{ vaultwarden_log_file }}"
     state: touch
     owner: "1000"
@@ -31,4 +32,7 @@
   notify: Restart vaultwarden
 
 - name: Start Vaultwarden using Docker Compose
-  shell: docker-compose -f {{ vaultwarden_directory }}/docker-compose.yml up -d
+  ansible.builtin.command: docker-compose up -d
+  args:
+    chdir: "{{ vaultwarden_directory }}"
+  changed_when: false

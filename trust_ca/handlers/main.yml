@@ -1,2 +1,3 @@
 - name: Updating CA certificates
-  command: /usr/sbin/update-ca-certificates
+  ansible.builtin.command: /usr/sbin/update-ca-certificates
+  changed_when: false

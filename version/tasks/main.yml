@@ -1,12 +1,14 @@
 ---
 - name: Retrieve the latest commit
-  shell: git log -1 --format="%h %ci"
+  ansible.builtin.command: git log -1 --format="%h %ci"
   register: git_version
   delegate_to: localhost
+  changed_when: false
 
 - name: Write to the machine
-  copy:
+  ansible.builtin.copy:
     content: |
       Commit id : "{{ git_version.stdout.split(' ')[0] }}"
       Date : "{{ git_version.stdout.split(' ')[1] }}"
     dest: "{{ version_path }}"
+    mode: '0644'

@@ -1,24 +1,27 @@
 ---
 - name: Read the ascii_art file and store it in a variable
-  set_fact:
+  ansible.builtin.set_fact:
     ascii_art: "{{ lookup('file', 'files/art.txt') }}"
   when: ascii_art is not defined
 
 - name: Copy templates
-  template: src={{ item.src }} dest={{ item.dest }} mode='0755'
+  ansible.builtin.template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: '0755'
   with_items:
     - { src: ascii_motd, dest: "/etc/update-motd.d/{{ motd_ascii_file }}" }
     - { src: sshd_config, dest: /etc/ssh/sshd_config }
   notify: Restart sshd daemon
 
 - name: Delete static MOTD
-  file:
+  ansible.builtin.file:
     path: /etc/motd
     state: absent
   notify: Restart sshd daemon
 
 - name: List files in /etc/update-motd.d excluding {{ motd_ascii_file }}
-  find:
+  ansible.builtin.find:
     paths: /etc/update-motd.d
     file_type: file
     patterns: "*"
@@ -27,7 +30,7 @@
   notify: Restart sshd daemon
 
 - name: Delete motd files except {{ motd_ascii_file }}
-  file:
+  ansible.builtin.file:
     path: "{{ item.path }}"
     state: absent
   loop: "{{ motd_files_to_remove.files }}"

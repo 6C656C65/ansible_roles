@@ -1,3 +1,5 @@
 - name: Reload squid configuration
-  ansible.builtin.command:
-    cmd: docker-compose -f {{ squid_directory }}/docker-compose.yml exec squid squid -k reconfigure
+  ansible.builtin.command: docker-compose exec squid squid -k reconfigure
+  args:
+    chdir: "{{ squid_directory }}"
+  changed_when: false
