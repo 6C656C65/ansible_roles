@@ -1,9 +1,10 @@
 ---
 - name: Configuring DNS
-  copy:
+  ansible.builtin.copy:
     dest: /etc/resolv.conf
     content: |
       domain {{ domain }}
       search {{ search }}
       nameserver {{ nameserver }}
+    mode: '0644'
   notify: Restart networking service

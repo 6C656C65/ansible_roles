@@ -1,16 +1,16 @@
 ---
 - name: Install Fail2Ban package
-  apt:
+  ansible.builtin.apt:
     name: fail2ban
     state: present
-    update_cache: yes
+    update_cache: true
 
 - name: Ensure jail.local exists from default jail.conf
-  copy:
+  ansible.builtin.copy:
     src: "{{ fail2ban_source_file }}"
     dest: "{{ fail2ban_config_file }}"
-    remote_src: yes
-    force: no
+    remote_src: true
+    force: false
     owner: root
     group: root
     mode: '0644'

@@ -1,6 +1,6 @@
 galaxy_info:
   author: 6C656C65
-  description: "Role to configure sysctl on Debian"
+  description: "Role to upgrade and install somes packages on debian"
   license: "MIT"
   min_ansible_version: "2.14"
 

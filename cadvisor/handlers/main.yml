@@ -1,3 +1,6 @@
 ---
 - name: Restart cadvisor
-  shell: docker-compose -f {{ cadvisor_directory }}/docker-compose.yml restart
+  ansible.builtin.command: docker-compose restart
+  args:
+    chdir: "{{ cadvisor_directory }}"
+  changed_when: false

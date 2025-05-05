@@ -1,31 +1,33 @@
 ---
 - name: Install Docker
-  apt:
+  ansible.builtin.apt:
     name: '{{ item.name }}'
-    state: latest
+    state: present
   with_items:
     - { name: docker }
     - { name: docker-compose }
 
 - name: Add users to the docker group
-  user:
+  ansible.builtin.user:
     name: "{{ item }}"
     groups: docker
-    append: yes
+    append: true
   loop: "{{ docker_users }}"
 
 - name: Create the docker.service.d directory
-  file:
+  ansible.builtin.file:
     path: /etc/systemd/system/docker.service.d
     state: directory
+    mode: '0755'
 
 - name: Configure the proxy
-  template:
+  ansible.builtin.template:
     src: override.conf
     dest: /etc/systemd/system/docker.service.d/override.conf
-  notify: 
+    mode: '0644'
+  notify:
     - Reload systemd docker
     - Restart docker service
 
 - name: Flush handlers
-  meta: flush_handlers
+  ansible.builtin.meta: flush_handlers

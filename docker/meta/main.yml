@@ -3,9 +3,5 @@ galaxy_info:
   description: "Role to configure docker and docker-compose on debian"
   license: "MIT"
   min_ansible_version: "2.14"
-  platforms:
-    - name: "Debian"
-      versions:
-        - "12.10"
 
 dependencies: []

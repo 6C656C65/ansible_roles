@@ -1,6 +1,6 @@
 ---
 - name: Create required directories
-  file:
+  ansible.builtin.file:
     path: "{{ cadvisor_directory }}{{ item.name }}"
     state: directory
     mode: '0755'
@@ -8,10 +8,14 @@
     - { name: "/" }
 
 - name: Copy docker-compose.yml
-  template:
+  ansible.builtin.template:
     src: docker-compose.yml
     dest: "{{ cadvisor_directory }}/docker-compose.yml"
+    mode: '0644'
   notify: Restart cadvisor
 
 - name: Start cadvisor containers
-  command: docker-compose -f {{ cadvisor_directory }}/docker-compose.yml up -d
+  ansible.builtin.command: docker-compose up -d
+  args:
+    chdir: "{{ cadvisor_directory }}"
+  changed_when: false

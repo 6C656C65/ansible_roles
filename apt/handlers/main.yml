@@ -1,3 +1,5 @@
 - name: Purge old packages
   ansible.builtin.shell: |
+    set -o pipefail
     dpkg -l | grep '^rc' | awk '{print $2}' | xargs --no-run-if-empty dpkg --purge
+  changed_when: purge_output.stdout != ""
