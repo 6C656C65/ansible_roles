@@ -14,7 +14,7 @@ lldap_global:
   admin_password: changeme
 
 lldap_smtp:
-  enable_password_reset: true
+  enable_password_reset: "true"
   server: smtp.example.com
   port: 465
   smtp_encryption: TLS
@@ -23,6 +23,6 @@ lldap_smtp:
   from: lldap@company.com
 
 lldap_ldaps:
-  enabled: true
+  enabled: "true"
   cert_file: /certs/fullchain.pem
   key_file: /certs/privkey.pem
