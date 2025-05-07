@@ -18,6 +18,7 @@
    - [fail2ban](#-fail2ban)
    - [grub](#-grub)
    - [iptables](#-iptables)
+   - [lldap](#-lldap)
    - [logindefs](#-logindefs)
    - [nginx](#-nginx)
    - [ntp](#-ntp)
@@ -402,6 +403,88 @@ iptables_rules:
 * **Save iptables rules**: Persists the firewall rules by saving them to `/etc/iptables/rules.v4`.
 
 This role applies firewall rules and logs blocked traffic as per the configuration defined in `defaults/main.yml`.
+
+</details>
+
+### 📄 lldap
+
+<details>
+<summary>Click to expand the <code>lldap</code> role documentation</summary>
+
+Deploys and bootstraps [LLDAP](https://github.com/lldap/lldap) in Docker using a configurable directory layout. Supports LDAPS, SMTP for password reset, and user/group bootstrapping via JSON files.
+
+**✅ Features**
+
+* Runs LLDAP in Docker with full environment configuration
+* Supports LDAPS via custom certificate files
+* Allows SMTP configuration for password reset
+* Bootstraps users and groups at first run
+* Uses Docker Compose for service management
+* Optional override for file source path (e.g., bootstrap or certs)
+
+**📁 Structure**
+
+```text
+lldap/
+├── defaults/
+│   └── main.yml
+├── files/
+│   ├── bootstrap/
+│   │   ├── group-configs/
+│   │   │   └── groups.json
+│   │   ├── group-schemas/
+│   │   │   └── groups.json
+│   │   └── user-configs/
+│   │       └── users.json
+│   └── certs/
+│       ├── fullchain.pem
+│       └── privkey.pem
+├── handlers/
+│   └── main.yml
+├── tasks/
+│   └── main.yml
+├── templates/
+│   └── docker-compose.yml
+```
+
+**⚙️ Defaults (defaults/main.yml)**
+
+```yaml
+lldap_directory: /opt/lldap
+# lldap_files_source_override: /opt/lldap/files
+
+lldap_global:
+  ...
+
+lldap_smtp:
+  ...
+
+lldap_ldaps:
+  ...
+```
+
+* `lldap_directory`: Path where LLDAP will be deployed (config, certs, and bootstrap files).
+* `lldap_files_source_override` (*optional*): Custom path to files directory (instead of default `roles/lldap/files`).
+* `lldap_global`, `lldap_smtp`, `lldap_ldaps`: Define runtime behavior of LLDAP service.
+
+**📋 Tasks**
+
+* Create the required directories for LLDAP deployment
+* Render and copy `docker-compose.yml` from a Jinja2 template
+* Copy bootstrap files (users, groups) and certificates into the target directory
+* Start the LLDAP container with Docker Compose
+* Run the LLDAP bootstrap script (`/app/bootstrap.sh`) inside the container
+
+**🔁 Handlers**
+
+* `Start lldap`: Runs `docker-compose up -d` in the deployment directory
+* `Apply bootstrap lldap`: Runs the bootstrap script inside the container
+
+**📦 Docker Compose Template**
+
+* Exposes default ports: 389 (LDAP), 636 (LDAPS), 17170 (Web UI)
+* Mounts bootstrap and cert directories
+* Configures environment variables for LLDAP behavior (LDAP base DN, SMTP, LDAPS, admin credentials, etc.)
 
 </details>
 
