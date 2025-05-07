@@ -1,0 +1,44 @@
+caddy_directory: /opt/caddy
+# caddy_cert_source_override: /opt/caddy/certs
+
+backend:
+  hostA:
+    - domain: example.local
+      network: example_net
+      backend: |
+        reverse_proxy backend:80
+        log {
+          output file /var/log/caddy/access.log
+          format append {
+            hostname {{ inventory_hostname }}
+          }
+        }
+    - domain: example2.local
+      network: example2_net
+      backend: |
+        reverse_proxy /api/ws* backend:3000 {
+          header_up Connection "upgrade"
+          header_up Upgrade "{header.Upgrade}"
+          header_up Origin ""
+          transport http {
+            versions h1
+          }
+        }
+        reverse_proxy backend:3000
+        log {
+          output file /var/log/caddy/access.log
+          format append {
+            hostname {{ inventory_hostname }}
+          }
+        }
+  hostB:
+    - domain: example3.local
+      network: example3_net
+      backend: |
+        reverse_proxy backend:80
+        log {
+          output file /var/log/caddy/access.log
+          format append {
+            hostname {{ inventory_hostname }}
+          }
+        }

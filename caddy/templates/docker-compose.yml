@@ -1,0 +1,31 @@
+services:
+  caddy:
+    image: caddy:2
+    container_name: caddy
+    restart: unless-stopped
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - ./certs/:/data/caddy/pki/authorities/local/
+      - /var/log/caddy:/var/log/caddy
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    ports:
+      - "80:80"
+      - "443:443"
+      - "2019:2019"
+    networks:
+{% for item in backend[inventory_hostname] %}
+      {{ item.network }}:
+{% endfor %}
+
+networks:
+{% for item in backend[inventory_hostname] %}
+  {{ item.network }}:
+    external: true
+{% endfor %}
+
+volumes:
+  caddy-data:
+    name: caddy-data
+  caddy-config:
+    name: caddy-config

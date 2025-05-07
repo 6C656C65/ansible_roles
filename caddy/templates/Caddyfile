@@ -1,0 +1,25 @@
+{
+	skip_install_trust
+	pki {
+		ca local {
+			intermediate {
+				format pem_file
+				cert /data/caddy/pki/authorities/local/intermediate_ca.crt
+				key /data/caddy/pki/authorities/local/intermediate_ca.key
+			}
+		}
+	}
+	ocsp_stapling off
+	metrics
+	admin :2019
+	servers {
+		strict_sni_host on
+	}
+
+}
+
+{% for item in backend[inventory_hostname] %}
+{{ item.domain }} {
+{{ item.backend }}
+}
+{% endfor %}

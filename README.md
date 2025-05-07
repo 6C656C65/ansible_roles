@@ -12,6 +12,7 @@
 1. [Integration](#-integration)
 2. [Available Roles](#-available-roles)
    - [apt](#-apt)
+   - [caddy](#-caddy)
    - [cadvisor](#-cadvisor)
    - [dns](#-dns)
    - [docker](#-docker)
@@ -94,6 +95,84 @@ packages_to_install:
 **🔁 Handlers**
 
 - **Purge old packages**: Removes packages that are no longer needed (those marked for removal) by purging them from the system.
+
+</details>
+
+### 📄 caddy
+
+<details>
+<summary>Click to expand the <code>caddy</code> role documentation</summary>
+
+Deploys and configures the [Caddy](https://caddyserver.com/) web server using Docker with flexible reverse proxy rules and support for custom TLS certificates. Configuration is fully dynamic per host and domain.
+
+**✅ Features**
+
+* Manages Caddy deployment per host using Docker Compose
+* Supports multiple domains per host with custom reverse proxy logic
+* Allows full customization of `Caddyfile` via Jinja templating
+* Accepts user-provided TLS certificates (intermediate CA)
+* Automatically sets up directories, configurations, and starts Caddy
+* Dynamic logging with per-host hostname injection
+
+**📁 Structure**
+
+```text
+caddy/
+├── defaults/
+│   └── main.yml
+├── files/
+│   ├── intermediate_ca.crt
+│   └── intermediate_ca.key
+├── handlers/
+│   └── main.yml
+├── tasks/
+│   └── main.yml
+├── templates/
+│   ├── docker-compose.yml
+│   └── Caddyfile
+```
+
+**⚙️ Defaults (defaults/main.yml)**
+
+```yaml
+caddy_directory: /opt/caddy
+# caddy_cert_source_override: /opt/caddy/certs
+
+backend:
+  hostA:
+    ...
+```
+
+* `caddy_directory`: Path where Caddy configuration and Docker setup are deployed.
+* `caddy_cert_source_override` (*optional*): Override the source directory for certificates.
+* `backend`: Per-host domain configuration block with custom reverse proxy and logging logic (templated).
+
+**📋 Tasks**
+
+* Detect backends for the current host
+* Create necessary directories (`/opt/caddy` and `/opt/caddy/certs`)
+* Render and deploy `Caddyfile` and `docker-compose.yml` for the host
+* Copy provided TLS certificate files into the correct path
+* Start Caddy with Docker Compose
+* Automatically restart the Caddy container if configuration or certs change
+
+**🔁 Handlers**
+
+* `Restart caddy docker`: Restarts the Caddy service in the deployment directory via Docker Compose
+
+**📦 Docker Compose Template**
+
+* Runs Caddy in a container
+* Mounts host configuration and certificates
+* Exposes standard HTTP/HTTPS ports (80, 443)
+* Uses environment variables if necessary (template-ready)
+
+**📄 Caddyfile Template**
+
+* Generates a custom `Caddyfile` with dynamic domain blocks
+* Supports advanced reverse proxying, including WebSocket support
+* Logs requests with host-specific data
+* Injects backend rules from `defaults/main.yml`
 
 </details>
 

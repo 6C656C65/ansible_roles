@@ -1,0 +1,42 @@
+---
+- name: Check for backends for the host
+  ansible.builtin.set_fact:
+    current_backends: "{{ backend[inventory_hostname] | default([]) }}"
+
+- name: Run tasks if backends are present
+  when: current_backends | length > 0
+  block:
+    - name: Create necessary directories
+      ansible.builtin.file:
+        path: "{{ caddy_directory }}{{ item.name }}"
+        state: directory
+        mode: '0755'
+      with_items:
+        - { name: "/" }
+        - { name: "/certs" }
+
+    - name: Copy host-specific docker-compose.yml
+      ansible.builtin.template:
+        src: "docker-compose.yml"
+        dest: "{{ caddy_directory }}/docker-compose.yml"
+        mode: '0644'
+
+    - name: Copy host-specific Caddyfile
+      ansible.builtin.template:
+        src: "Caddyfile"
+        dest: "{{ caddy_directory }}/Caddyfile"
+        mode: '0644'
+      notify: Restart caddy docker
+
+    - name: Copy certificates
+      ansible.builtin.copy:
+        src: "{{ (caddy_cert_source_override | default(role_path ~ '/files')) ~ '/' }}/"
+        dest: "{{ caddy_directory }}/certs/"
+        mode: '0644'
+      notify: Restart caddy docker
+
+    - name: Start caddy service
+      ansible.builtin.command: docker-compose up -d
+      args:
+        chdir: "{{ caddy_directory }}"
+      changed_when: false
