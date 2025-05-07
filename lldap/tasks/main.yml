@@ -1,0 +1,22 @@
+---
+- name: Create necessary directories
+  ansible.builtin.file:
+    path: "{{ lldap_directory }}{{ item.name }}"
+    state: directory
+    mode: '0755'
+  with_items:
+    - { name: "/" }
+
+- name: Copy docker-compose.yml
+  ansible.builtin.template:
+    src: docker-compose.yml
+    dest: "{{ lldap_directory }}/docker-compose.yml"
+    mode: '0644'
+  notify: Start lldap
+
+- name: Copy files
+  ansible.builtin.copy:
+    src: "{{ (lldap_files_source_override | default(role_path ~ '/files')) ~ '/' }}/"
+    dest: "{{ lldap_directory }}"
+    mode: '0644'
+  notify: Apply bootstrap lldap

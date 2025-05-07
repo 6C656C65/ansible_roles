@@ -1,0 +1,12 @@
+---
+- name: Start lldap
+  ansible.builtin.command: docker-compose up -d
+  args:
+    chdir: "{{ lldap_directory }}"
+  changed_when: false
+
+- name: Apply bootstrap lldap
+  ansible.builtin.command: docker-compose exec lldap /app/bootstrap.sh
+  args:
+    chdir: "{{ lldap_directory }}"
+  changed_when: false

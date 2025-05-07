@@ -1,0 +1,28 @@
+lldap_directory: /opt/lldap
+# lldap_files_source_override: /opt/lldap/files
+
+lldap_global:
+  timezone: America/New York
+  jwt_secret: changeme
+  key_seed: changeme
+  http_url: ldap.company.com
+  base_dn: dc=company,dc=com
+  user_dn: admin
+  user_password: changeme
+  user_mail: lldap@company.com
+  admin_username: admin
+  admin_password: changeme
+
+lldap_smtp:
+  enable_password_reset: true
+  server: smtp.example.com
+  port: 465
+  smtp_encryption: TLS
+  user: lldap@company.com
+  password: changeme
+  from: lldap@company.com
+
+lldap_ldaps:
+  enabled: true
+  cert_file: /certs/fullchain.pem
+  key_file: /certs/privkey.pem

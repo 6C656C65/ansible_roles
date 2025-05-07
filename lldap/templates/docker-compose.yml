@@ -1,0 +1,84 @@
+version: "3"
+
+services:
+  lldap:
+    image: lldap/lldap:stable
+    container_name: lldap
+    restart: unless-stopped
+    ports:
+      - "389:3890"
+      - "636:6360"
+    volumes:
+      - lldap-data:/data
+      - ./certs/:/certs/
+      - ./bootstrap/:/bootstrap/
+    environment:
+{% if lldap_global.timezone is defined %}
+      - TZ={{ lldap_global.timezone }}
+{% endif %}
+{% if lldap_global.jwt_secret is defined %}
+      - LLDAP_JWT_SECRET={{ lldap_global.jwt_secret }}
+{% endif %}
+{% if lldap_global.key_seed is defined %}
+      - LLDAP_KEY_SEED={{ lldap_global.key_seed }}
+{% endif %}
+{% if lldap_global.http_url is defined %}
+      - LLDAP_HTTP_URL={{ lldap_global.http_url }}
+{% endif %}
+{% if lldap_global.base_dn is defined %}
+      - LLDAP_LDAP_BASE_DN={{ lldap_global.base_dn }}
+{% endif %}
+{% if lldap_global.user_dn is defined %}
+      - LLDAP_LDAP_USER_DN={{ lldap_global.user_dn }}
+{% endif %}
+{% if lldap_global.user_password is defined %}
+      - LLDAP_LDAP_USER_PASS={{ lldap_global.user_password }}
+{% endif %}
+{% if lldap_global.user_mail is defined %}
+      - LLDAP_LDAP_USER_EMAIL={{ lldap_global.user_mail }}
+{% endif %}
+{% if lldap_global.admin_username is defined %}
+      - LLDAP_ADMIN_USERNAME={{ lldap_global.admin_username }}
+{% endif %}
+{% if lldap_global.admin_password is defined %}
+      - LLDAP_ADMIN_PASSWORD={{ lldap_global.admin_password }}
+{% endif %}
+{% if lldap_ldaps.enabled is defined %}
+      - LLDAP_LDAPS_OPTIONS__ENABLED={{ lldap_ldaps.enabled }}
+{% endif %}
+{% if lldap_ldaps.cert_file is defined %}
+      - LLDAP_LDAPS_OPTIONS__CERT_FILE={{ lldap_ldaps.cert_file }}
+{% endif %}
+{% if lldap_ldaps.key_file is defined %}
+      - LLDAP_LDAPS_OPTIONS__KEY_FILE={{ lldap_ldaps.key_file }}
+{% endif %}
+{% if lldap_smtp.enable_password_reset is defined %}
+      - LLDAP_SMTP_OPTIONS__ENABLE_PASSWORD_RESET={{ lldap_smtp.enable_password_reset }}
+{% endif %}
+{% if lldap_smtp.server is defined %}
+      - LLDAP_SMTP_OPTIONS__SERVER={{ lldap_smtp.server }}
+{% endif %}
+{% if lldap_smtp.port is defined %}
+      - LLDAP_SMTP_OPTIONS__PORT={{ lldap_smtp.port }}
+{% endif %}
+{% if lldap_smtp.smtp_encryption is defined %}
+      - LLDAP_SMTP_OPTIONS__SMTP_ENCRYPTION={{ lldap_smtp.smtp_encryption }}
+{% endif %}
+{% if lldap_smtp.user is defined %}
+      - LLDAP_SMTP_OPTIONS__USER={{ lldap_smtp.user }}
+{% endif %}
+{% if lldap_smtp.password is defined %}
+      - LLDAP_SMTP_OPTIONS__PASSWORD={{ lldap_smtp.password }}
+{% endif %}
+{% if lldap_smtp.from is defined %}
+      - LLDAP_SMTP_OPTIONS__FROM={{ lldap_smtp.from }}
+{% endif %}
+    networks:
+      lldap:
+
+networks:
+  lldap:
+
+volumes:
+  lldap-data:
+    name: lldap-data

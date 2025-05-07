@@ -1,0 +1,23 @@
+[
+    {
+      "name": "uid",
+      "attributeType": "INTEGER",
+      "isEditable": false,
+      "isList": false,
+      "isVisible": true
+    },
+    {
+      "name": "mailbox",
+      "attributeType": "STRING",
+      "isEditable": false,
+      "isList": false,
+      "isVisible": true
+    },
+    {
+      "name": "mail_alias",
+      "attributeType": "STRING",
+      "isEditable": false,
+      "isList": true,
+      "isVisible": true
+    }
+  ]
