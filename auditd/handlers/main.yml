@@ -1,0 +1,6 @@
+---
+- name: Restart auditd via systemd
+  ansible.builtin.systemd:
+    name: auditd.service
+    state: restarted
+    enabled: true

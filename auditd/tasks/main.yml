@@ -1,0 +1,38 @@
+---
+- name: Install auditd packages
+  ansible.builtin.apt:
+    name: "auditd"
+    state: present
+
+- name: Configure auditd
+  ansible.builtin.template:
+    src: "auditd.conf"
+    dest: /etc/audit/auditd.conf
+    owner: root
+    group: root
+    mode: "0640"
+  notify:
+    - Restart auditd via systemd
+
+- name: Configure audit rules
+  ansible.builtin.copy:
+    dest: /etc/audit/rules.d/audit.rules
+    content: |
+      {% for line in auditd_rules %}
+      {{ line }}
+      {% endfor %}
+    owner: root
+    group: root
+    mode: '0640'
+  notify:
+    - Restart auditd via systemd
+
+- name: Configure logrotate conf
+  ansible.builtin.copy:
+    src: "files/logrotate.d/audit"
+    dest: /etc/logrotate.d/audit
+    owner: root
+    group: root
+    mode: "0640"
+  notify:
+    - Restart auditd via systemd

@@ -12,6 +12,7 @@
 1. [Integration](#-integration)
 2. [Available Roles](#-available-roles)
    - [apt](#-apt)
+   - [auditd](#-auditd)
    - [caddy](#-caddy)
    - [cadvisor](#-cadvisor)
    - [dns](#-dns)
@@ -98,7 +99,103 @@ packages_to_install:
 
 </details>
 
-### 📄 caddy
+### 📄 `auditd`
+
+<details>
+<summary>Click to expand the <code>auditd</code> role documentation</summary>
+
+This role installs and configures the `auditd` daemon on Debian-based systems. It enforces a custom set of audit rules, manages logging configuration, and ensures log rotation with tailored settings.
+
+**✅ Features**
+
+* Installs `auditd` and required packages
+* Applies audit rules via `defaults/main.yml`
+* Configures `/etc/audit/auditd.conf` using a Jinja2 template
+* Deploys a custom `logrotate` configuration
+* Ensures `auditd` service is restarted when necessary
+
+**📁 Structure**
+
+```text
+auditd/
+├── defaults/
+│   └── main.yml
+├── files/
+│   └── logrotate.d/
+│       └── audit
+├── handlers/
+│   └── main.yml
+├── tasks/
+│   └── main.yml
+├── templates/
+│   └── auditd.conf
+```
+
+**⚙️ Defaults (defaults/main.yml)**
+
+```yaml
+auditd_rules:
+  - "-D"
+  - "-b 8192"
+  - "--backlog_wait_time 60000"
+  - "-f 1"
+  - "-a always,exit -F arch=b64 -S execve -k exec_commands"
+  - "-a always,exit -F arch=b32 -S execve -k exec_commands"
+  - "-w /etc/passwd -p wa -k passwd_changes"
+  - "-w /etc/shadow -p wa -k shadow_changes"
+  - "-a always,exit -F arch=b64 -S setuid,setgid -k privilege_change"
+  - "-a always,exit -F arch=b32 -S setuid,setgid -k privilege_change"
+```
+
+* `auditd_rules`: List of audit rules to apply. These are written directly to `/etc/audit/rules.d/audit.rules`.
+
+**📋 Tasks**
+
+* Installs the `auditd` package
+* Configures `/etc/audit/auditd.conf` using a Jinja2 template
+* Generates `/etc/audit/rules.d/audit.rules` using the `auditd_rules` list
+* Deploys a custom `logrotate` configuration for audit logs
+* Notifies handler to restart `auditd` after any changes
+
+**🔁 Handlers**
+
+```yaml
+- name: Restart auditd via systemd
+  ansible.builtin.systemd:
+    name: auditd.service
+    state: restarted
+    enabled: true
+```
+
+This handler ensures that changes are applied immediately by restarting the service.
+
+**📄 Template: auditd.conf**
+
+The template defines audit daemon behavior, including file paths, disk space handling, and log format. It follows secure and production-friendly defaults, with `log_format = ENRICHED` and log rotation triggers.
+
+**🌀 Log Rotation: logrotate.d/audit**
+
+```conf
+/var/log/audit/audit.log {
+    daily
+    missingok
+    rotate 0
+    size 100M
+    create 0600 root root
+    postrotate
+        /usr/sbin/service auditd reload > /dev/null 2>&1 || true
+    endscript
+    compress
+    delaycompress
+    notifempty
+}
+```
+
+This configuration ensures logs are rotated safely and auditd is reloaded afterward.
+
+</details>
+
+### 📄 `caddy`
 
 <details>
 <summary>Click to expand the <code>caddy</code> role documentation</summary>
@@ -485,7 +582,7 @@ This role applies firewall rules and logs blocked traffic as per the configurati
 
 </details>
 
-### 📄 lldap
+### 📄 `lldap`
 
 <details>
 <summary>Click to expand the <code>lldap</code> role documentation</summary>
@@ -600,7 +697,7 @@ The `login.defs` template should define system-wide settings for login, password
 
 </details>
 
-### 📄 nginx
+### 📄 `nginx`
 
 <details>
 <summary>Click to expand the <code>nginx</code> role documentation</summary>

@@ -1,0 +1,13 @@
+/var/log/audit/audit.log {
+    daily
+    missingok
+    rotate 0
+    size 100M
+    create 0600 root root
+    postrotate
+        /usr/sbin/service auditd reload > /dev/null 2>&1 || true
+    endscript
+    compress
+    delaycompress
+    notifempty
+}
