@@ -1,0 +1,76 @@
+---
+- name: Ensure directory for apt keyrings exists
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: '0755'
+
+- name: Add Grafana GPG key
+  ansible.builtin.apt_key:
+    url: https://apt.grafana.com/gpg.key
+    keyring: /etc/apt/keyrings/grafana.gpg
+    state: present
+  environment:
+    HTTP_PROXY: "{{ http_proxy }}"
+    HTTPS_PROXY: "{{ https_proxy }}"
+    NO_PROXY: "{{ no_proxy }}"
+
+- name: Add Grafana APT repository
+  ansible.builtin.apt_repository:
+    repo: "deb [signed-by=/etc/apt/keyrings/grafana.gpg] https://apt.grafana.com stable main"
+    filename: grafana
+    state: present
+
+- name: Update apt cache
+  ansible.builtin.apt:
+    update_cache: true
+
+- name: Install promtail
+  ansible.builtin.apt:
+    name: promtail
+    state: present
+
+- name: Create Promtail config directory
+  ansible.builtin.file:
+    path: "{{ promtail_folder }}"
+    state: directory
+    owner: promtail
+    group: root
+    mode: '0755'
+
+- name: Configure promtail
+  ansible.builtin.template:
+    src: "config.yml.j2"
+    dest: "{{ promtail_folder }}/config.yml"
+    owner: promtail
+    group: root
+    mode: "0640"
+  notify:
+    - Restart promtail via systemd
+
+- name: Create Promtail systemd service
+  ansible.builtin.copy:
+    dest: "/etc/systemd/system/promtail.service"
+    content: |
+      [Unit]
+      Description=Promtail Service
+      After=network.target
+
+      [Service]
+      User=root
+      ExecStart=/usr/bin/promtail -config.file={{ promtail_folder }}/config.yml
+      Restart=always
+
+      [Install]
+      WantedBy=multi-user.target
+    owner: promtail
+    group: root
+    mode: '0644'
+  notify:
+    - Reload systemd
+
+- name: Ensure Promtail service is started and enabled
+  ansible.builtin.systemd:
+    name: promtail
+    state: started
+    enabled: true

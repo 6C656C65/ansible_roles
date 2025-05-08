@@ -1,0 +1,35 @@
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+
+positions:
+  filename: /tmp/positions.yaml
+
+clients:
+  - url: {{ loki_url }}loki/api/v1/push
+    tls_config:
+      ca_file: /etc/ssl/certs/fgs-root-ca.pem
+      insecure_skip_verify: false 
+
+scrape_configs:
+{% for job in promtail_jobs['all'] %}
+  - job_name: {{ job.job_name }}
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+{% for key, value in job.labels.items() %}
+          {{ key }}: {{ value }}
+{% endfor %}
+{% endfor %}
+
+{% for job in promtail_jobs[inventory_hostname] | default([]) %}
+  - job_name: {{ job.job_name }}
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+{% for key, value in job.labels.items() %}
+          {{ key }}: {{ value }}
+{% endfor %}
+{% endfor %}

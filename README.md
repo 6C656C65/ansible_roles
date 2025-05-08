@@ -25,6 +25,7 @@
    - [nginx](#-nginx)
    - [ntp](#-ntp)
    - [privatebin](#-privatebin)
+   - [promtail](#-promtail)
    - [proxy](#-proxy)
    - [semaphore](#-semaphore)
    - [squid](#-squid)
@@ -915,6 +916,93 @@ privatebin:
 **🔧 Requirements**
 
 - Docker and Docker Compose must be installed on the target machine
+
+</details>
+
+### 📄 `promtail`
+
+<details>
+<summary>Click to expand the <code>promtail</code> role documentation</summary>
+
+This role installs and configures **Promtail**, the log collection agent used to send logs to **Loki** for centralized log aggregation and analysis on Debian-based systems. It handles installation, configuration, and management of the Promtail service.
+
+**✅ Features**
+
+* Installs `promtail` and required dependencies
+* Configures the Promtail service using a Jinja2 template
+* Allows dynamic configuration of log scraping jobs based on the target host
+* Ensures the Promtail service is started and enabled to run on boot
+* Ensures proper systemd management of the Promtail service
+
+**📁 Structure**
+
+```text
+promtail/
+├── defaults/
+│   └── main.yml
+├── handlers/
+│   └── main.yml
+├── tasks/
+│   └── main.yml
+└── templates/
+    └── config.yml.j2
+````
+
+**⚙️ Defaults (defaults/main.yml)**
+
+```yaml
+loki_url: https://loki.company.com:3100/
+promtail_folder: /etc/promtail
+
+promtail_jobs:
+  all:
+    - job_name: docker
+      labels:
+        job: docker
+        __path__: /var/lib/docker/containers/*/*.log
+  hostA:
+    - job_name: squid
+      labels:
+        job: squid
+        __path__: /var/log/squid/access.log
+  hostB:
+    - job_name: vaultwarden
+      labels:
+        job: vaultwarden
+        __path__: /var/log/vaultwarden/vaultwarden.log
+    - job_name: caddy
+      labels:
+        job: caddy
+        __path__: /var/log/caddy/access.log
+```
+
+* `loki_url`: The URL of the Loki server where Promtail sends logs.
+* `promtail_folder`: Directory for storing Promtail configuration files.
+* `promtail_jobs`: Defines the jobs Promtail will scrape logs from, including different log sources based on the host.
+
+**📋 Tasks**
+
+* Installs the `promtail` package
+* Configures Promtail's main configuration file using a Jinja2 template
+* Generates dynamic Promtail job configurations based on the host
+* Ensures the Promtail service is started and enabled to run at boot
+* Notifies handlers to restart the Promtail service when necessary
+
+**🔁 Handlers**
+
+```yaml
+- name: Restart promtail via systemd
+  ansible.builtin.systemd:
+    name: promtail.service
+    state: restarted
+    enabled: true
+```
+
+This handler ensures that changes to the configuration are applied immediately by restarting the Promtail service.
+
+**📄 Template: config.yml.j2**
+
+The template defines Promtail's behavior, including log scraping jobs, the Loki server to send logs to, and the file paths for log positions. It dynamically adapts to different hosts and log sources.
 
 </details>
 

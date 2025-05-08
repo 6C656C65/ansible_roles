@@ -1,0 +1,23 @@
+loki_url: https://loki.company.com:3100/
+promtail_folder: /etc/promtail
+
+promtail_jobs:
+  all:
+    - job_name: docker
+      labels:
+        job: docker
+        __path__: /var/lib/docker/containers/*/*.log
+  hostA:
+    - job_name: squid
+      labels:
+        job: squid
+        __path__: /var/log/squid/access.log
+  hostB:
+    - job_name: vaultwarden
+      labels:
+        job: vaultwarden
+        __path__: /var/log/vaultwarden/vaultwarden.log
+    - job_name: caddy
+      labels:
+        job: caddy
+        __path__: /var/log/caddy/access.log
