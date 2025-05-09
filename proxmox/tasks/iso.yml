@@ -1,0 +1,52 @@
+- name: Ensure scripts are executable
+  ansible.builtin.file:
+    path: "{{ item }}"
+    mode: "0755"
+  with_items:
+    - "{{ custom_iso_path }}/build.sh"
+    - "{{ custom_iso_path }}/upload/proxmox.sh"
+  delegate_to: localhost
+
+- name: Run custom_iso/build.sh
+  ansible.builtin.command: >
+    {{ custom_iso_path }}/build.sh
+    in="{{ build.in }}"
+    out="{{ build.out }}"
+    preseed="{{ build.preseed }}"
+  args:
+    chdir: "{{ custom_iso_path }}"
+  delegate_to: localhost
+  become: true
+  changed_when: false
+
+- name: Rename ISO file with current date and time
+  ansible.builtin.command: >
+    mv "{{ build.out }}" "{{ build.out | regex_replace('\.iso$', '') }}_{{ lookup('pipe', 'date +%Y%m%d_%H%M%S') }}.iso"
+  args:
+    chdir: "{{ custom_iso_path }}"
+  register: iso_rename
+  delegate_to: localhost
+  changed_when: false
+
+- name: Set fact with renamed ISO path
+  ansible.builtin.set_fact:
+    renamed_iso: "{{ build.out | regex_replace('\\.iso$', '') }}_{{ lookup('pipe', 'date +%Y%m%d_%H%M%S') }}.iso"
+
+- name: Run custom_iso/upload/proxmox.sh
+  ansible.builtin.command: >
+    {{ custom_iso_path }}/upload/proxmox.sh
+    url="{{ deploy.proxmox_host }}"
+    nodes="{{ deploy.proxmox_nodes }}"
+    iso="{{ renamed_iso }}"
+    token-id="{{ deploy.token_id }}"
+    token-secret="{{ vault_proxmox_root_ansible }}"
+  args:
+    chdir: "{{ custom_iso_path }}"
+  delegate_to: localhost
+  changed_when: false
+
+- name: Run custom_iso/clear.sh
+  ansible.builtin.command: >
+    {{ custom_iso_path }}/clear.sh
+  delegate_to: localhost
+  changed_when: false

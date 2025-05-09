@@ -1,0 +1,7 @@
+- name: Include ISO tasks
+  ansible.builtin.import_tasks: iso.yml
+  tags: iso
+
+- name: Include VM tasks
+  ansible.builtin.import_tasks: vm.yml
+  tags: vm

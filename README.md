@@ -26,6 +26,7 @@
    - [ntp](#-ntp)
    - [privatebin](#-privatebin)
    - [promtail](#-promtail)
+   - [proxmox](#-proxmox)
    - [proxy](#-proxy)
    - [semaphore](#-semaphore)
    - [squid](#-squid)
@@ -1003,6 +1004,122 @@ This handler ensures that changes to the configuration are applied immediately b
 **📄 Template: config.yml.j2**
 
 The template defines Promtail's behavior, including log scraping jobs, the Loki server to send logs to, and the file paths for log positions. It dynamically adapts to different hosts and log sources.
+
+</details>
+
+### 📄 `proxmox`
+
+<details>
+<summary>Click to expand the <code>proxmox</code> role documentation</summary>
+
+Automate the creation and deployment of Debian-based virtual machines on a Proxmox server, including building custom preseeded ISO images.
+
+---
+
+**✅ Features**
+
+* Builds a custom Debian ISO using preseed configuration
+* Uploads ISO to specified Proxmox node(s)
+* Creates and configures virtual machines via Proxmox API
+* Allows detailed VM customization: memory, CPU, disk, network, tags, etc.
+* Fully local ISO generation via [custom\_iso project](https://github.com/6C656C65/custom_iso)
+
+---
+
+**📁 Structure**
+
+```text
+proxmox/
+├── defaults/
+│   └── main.yml
+├── tasks/
+│   ├── main.yml
+│   ├── iso.yml
+│   └── vm.yml
+```
+
+---
+
+**⚙️ Defaults (`defaults/main.yml`)**
+
+```yaml
+custom_iso_path: "{{ playbook_dir }}/custom_iso"
+
+build:
+  in: https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-12.10.0-amd64-netinst.iso
+  out: debian-12.10.0-amd64-netinst-preseed-ansible.iso
+  preseed: ../preseed.cfg
+
+deploy:
+  proxmox_host: proxmox.company.com
+  proxmox_nodes: proxmox-001
+  token_id: root@pam!ansible
+
+proxmox:
+  api_host: proxmox.company.com:8006
+  api_user: root@pam
+  api_pass: changeme
+  node: proxmox-001
+
+vm_list:
+  - name: "vm-100"
+    ...
+  - name: "vm-200"
+    ...
+```
+
+* `custom_iso_path`: Path to the `custom_iso` project directory.
+* `build.in`: URL or path of base Debian ISO.
+* `build.out`: Output ISO filename.
+* `build.preseed`: Path to the preseed file used for customization.
+* `deploy`: Proxmox access details for ISO upload.
+* `proxmox`: API credentials and target node.
+* `vm_list`: List of VMs to create with full specs (RAM, CPU, network, etc.).
+
+---
+
+**📋 Tasks**
+
+* **`iso.yml`**:
+
+  * Ensures necessary scripts are executable
+  * Builds a custom preseed ISO locally
+  * Renames ISO with timestamp
+  * Uploads ISO to Proxmox node(s)
+  * Runs a cleanup script
+
+* **`vm.yml`**:
+
+  * Creates virtual machines on the Proxmox node using the uploaded ISO
+  * Each VM is configured based on `vm_list`
+
+* **`main.yml`**:
+
+  * Includes ISO build/upload and VM creation tasks
+  * Allows tagged execution (`--tags iso` or `--tags vm`)
+
+---
+
+**🏷️ Tags**
+
+Run specific tasks using tags:
+
+```bash
+ansible-playbook your_playbook.yml --tags iso     # Only build and upload ISO
+ansible-playbook your_playbook.yml --tags vm      # Only create VMs
+ansible-playbook your_playbook.yml --tags proxmox # Run all proxmox role tasks
+```
+
+---
+
+**📦 Prerequisites**
+
+* `custom_iso` project ([https://github.com/6C656C65/custom\_iso](https://github.com/6C656C65/custom_iso)) cloned at the specified path
+* A `preseed.cfg` file located appropriately
+* Proxmox server with API access
+* Ansible collections:
+
+  * `community.general` (for `proxmox_kvm` module)
 
 </details>
 
