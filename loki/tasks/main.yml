@@ -6,7 +6,6 @@
     mode: '0755'
   with_items:
     - { name: "/" }
-    - { name: "/certs" }
 
 - name: Copy docker-compose.yml
   ansible.builtin.template:
