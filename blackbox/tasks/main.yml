@@ -1,0 +1,29 @@
+---
+- name: Create directories
+  ansible.builtin.file:
+    path: "{{ blackbox_directory }}{{ item.name }}"
+    state: directory
+    mode: '0755'
+  with_items:
+    - { name: "/" }
+
+- name: Copy docker-compose.yml
+  ansible.builtin.template:
+    src: docker-compose.yml
+    dest: "{{ blackbox_directory }}/docker-compose.yml"
+    mode: "0644"
+
+- name: Template blackbox config
+  ansible.builtin.template:
+    src: "blackbox.yml"
+    dest: "{{ blackbox_directory }}/blackbox.yml"
+    owner: "root"
+    group: "root"
+    mode: "755"
+  notify: Restart blackbox-exporter
+
+- name: Start docker
+  ansible.builtin.command: docker-compose up -d
+  args:
+    chdir: "{{ blackbox_directory }}"
+  changed_when: false

@@ -13,22 +13,28 @@
 2. [Available Roles](#-available-roles)
    - [apt](#-apt)
    - [auditd](#-auditd)
+   - [blackbox](#-blackbox)
    - [caddy](#-caddy)
    - [cadvisor](#-cadvisor)
    - [dns](#-dns)
    - [docker](#-docker)
    - [fail2ban](#-fail2ban)
+   - [grafana](#-grafana)
    - [grub](#-grub)
    - [iptables](#-iptables)
    - [lldap](#-lldap)
    - [logindefs](#-logindefs)
+   - [loki](#-loki)
    - [nginx](#-nginx)
    - [ntp](#-ntp)
    - [privatebin](#-privatebin)
+   - [prometheus](#-prometheus)
    - [promtail](#-promtail)
    - [proxmox](#-proxmox)
    - [proxy](#-proxy)
+   - [rsyslog](#-rsyslog)
    - [semaphore](#-semaphore)
+   - [snmpexporter](#-snmpexporter)
    - [squid](#-squid)
    - [sshd](#-sshd)
    - [sysctl](#-sysctl)
@@ -194,6 +200,74 @@ The template defines audit daemon behavior, including file paths, disk space han
 ```
 
 This configuration ensures logs are rotated safely and auditd is reloaded afterward.
+
+</details>
+
+### 📄 `blackbox`
+
+<details>
+<summary>Click to expand the <code>blackbox</code> role documentation</summary>
+
+Installs and configures the [Blackbox Exporter](https://github.com/prometheus/blackbox_exporter), a Prometheus exporter for blackbox probing, using Docker Compose to manage the service.
+
+**✅ Features**
+
+* Creates the necessary directory structure for Blackbox Exporter configuration
+* Deploys a templated `docker-compose.yml` for Docker container setup
+* Configures Blackbox Exporter with a custom `blackbox.yml` configuration file
+* Supports HTTP probing with customizable timeout, proxy settings, and SSL verification
+* Allows easy modifications of the configuration file via a Jinja2 template
+
+**📁 Directory Structure**
+
+```text
+blackbox/
+├── defaults/
+│   └── main.yml        # Default variables for blackbox exporter configuration
+├── handlers/
+│   └── main.yml        # Handlers for restarting the blackbox-exporter service
+├── tasks/
+│   └── main.yml        # Main tasks for setup and configuration
+├── templates/
+│   ├── blackbox.yml    # Blackbox exporter configuration template
+│   └── docker-compose.yml  # Docker Compose template for Blackbox Exporter setup
+```
+
+**⚙️ Default Configuration (`defaults/main.yml`)**
+
+```yaml
+blackbox_directory: /opt/blackbox  # Directory where Blackbox Exporter configuration is stored
+```
+
+* `blackbox_directory`: Specifies the root path where Blackbox Exporter will be installed.
+
+**📋 Tasks**
+
+* Creates necessary directories for Blackbox Exporter configuration
+* Deploys the `docker-compose.yml` file using Jinja2 templating
+* Templates the `blackbox.yml` configuration file and notifies Blackbox Exporter restart
+* Starts the Blackbox Exporter service using Docker Compose (`docker-compose up -d`)
+
+**📝 Templates**
+
+* `templates/blackbox.yml`: Defines the Blackbox Exporter configuration for probing HTTP services.
+* `templates/docker-compose.yml`: Defines the Blackbox Exporter container setup, volumes, and configuration command.
+
+**🔧 Requirements**
+
+* Docker and Docker Compose must be installed on the target machine
+
+**📋 Handlers**
+
+* **Restart Blackbox Exporter**: Ensures that Blackbox Exporter restarts when the configuration is updated.
+
+```yaml
+- name: Restart blackbox-exporter
+  ansible.builtin.command: docker-compose restart blackbox-exporter
+  args:
+    chdir: "{{ blackbox_directory }}"
+  changed_when: false
+```
 
 </details>
 
@@ -476,6 +550,75 @@ fail2ban_source_file: /etc/fail2ban/jail.conf
 
 </details>
 
+### 📄 `grafana`
+
+<details>
+<summary>Click to expand the <code>grafana</code> role documentation</summary>
+
+Installs and configures Grafana using Docker, customizes users, alerts, dashboards, and datasources.
+
+**✅ Features**
+
+* Installs Grafana via Docker Compose.
+* Configures Grafana settings including global settings, security, and user preferences.
+* Sets up SMTP for email notifications.
+* Provisions Grafana dashboards and datasources.
+* Allows customization of alerting settings.
+
+**📁 Structure**
+
+```text
+grafana/
+├── defaults/
+│   └── main.yml
+├── files/
+│   ├── dashboards/
+│   └── provisioning/
+├── handlers/
+│   └── main.yml
+├── tasks/
+│   └── main.yml
+├── templates/
+│   └── docker-compose.yml
+```
+
+**⚙️ Defaults (`defaults/main.yml`)**
+
+```yaml
+grafana_directory: /opt/grafana
+grafana_external_networks:
+  ...
+grafana_global:
+  ...
+grafana_security:
+  ...
+grafana_users:
+  ...
+grafana_smtp:
+  ...
+```
+
+* `grafana_directory`: Directory where Grafana will be installed.
+* `grafana_external_networks`: List of external networks to connect Grafana to.
+* `grafana_global`: Global configuration settings for Grafana.
+* `grafana_security`: Security settings for Grafana (admin credentials).
+* `grafana_users`: User preferences for Grafana.
+* `grafana_smtp`: SMTP settings for email notifications.
+
+**📋 Tasks**
+
+* Installs Grafana and Docker Compose.
+* Configures Grafana based on `defaults/main.yml` variables.
+* Creates necessary directories for Grafana and copies configuration files.
+* Provisions dashboards, datasources, and alerting rules.
+* Starts Grafana using Docker Compose.
+
+**🔁 Handlers**
+
+* `Restart grafana`: Restarts the Grafana container to apply updated configurations.
+
+</details>
+
 ### 📄 `grub`
 
 <details>
@@ -699,6 +842,133 @@ The `login.defs` template should define system-wide settings for login, password
 
 </details>
 
+### 📄 `loki`
+
+<details>
+<summary>Click to expand the <code>loki</code> role documentation</summary>
+
+Installs and configures [Loki](https://grafana.com/oss/loki/), a horizontally-scalable, highly-available, multi-tenant log aggregation system inspired by Prometheus. This role uses Docker Compose to deploy Loki with a custom configuration.
+
+**✅ Features**
+
+* Creates necessary directory structure for Loki configuration
+* Configures Loki with TLS certificates and a custom configuration file
+* Deploys Loki container using Docker Compose
+* Supports retention policy and compactor configuration
+* Supports custom TLS certificates for secure connections
+
+**📁 Directory Structure**
+
+```text
+loki/
+├── defaults/
+│   └── main.yml        # Default variables for Loki configuration
+├── files/
+│   ├── certs/
+│   │   ├── fullchain.pem  # Full certificate chain for TLS
+│   │   └── privkey.pem    # Private key for TLS
+│   └── local-config.yaml  # Loki configuration file
+├── handlers/
+│   └── main.yml        # Handlers for restarting Loki service
+├── tasks/
+│   └── main.yml        # Main tasks for setup and configuration
+├── templates/
+│   └── docker-compose.yml  # Docker Compose template for Loki setup
+```
+
+**⚙️ Default Configuration (`defaults/main.yml`)**
+
+```yaml
+loki_directory: /opt/loki  # Directory where Loki configuration and data will be stored
+```
+
+* `loki_directory`: Specifies the directory where Loki and its configuration will be installed.
+
+**📋 Tasks**
+
+* Creates necessary directories for Loki and its certificates
+* Deploys the `docker-compose.yml` file using Jinja2 templating
+* Configures and copies Loki's `local-config.yaml` file to the specified directory
+* Copies TLS certificates (`fullchain.pem` and `privkey.pem`) for secure connections
+* Starts the Loki service using Docker Compose (`docker-compose up -d`)
+
+**📝 Templates**
+
+* `templates/docker-compose.yml`: Defines the Loki container setup, including ports, volumes, and configuration file paths.
+* `files/local-config.yaml`: Configuration file for Loki, including retention policies, compactor configuration, and TLS settings.
+
+**🔧 Requirements**
+
+* Docker and Docker Compose must be installed on the target machine
+
+**📋 Example Loki Configuration (`files/local-config.yaml`)**
+
+```yaml
+auth_enabled: false
+
+server:
+  http_listen_port: 3100
+  http_tls_config:
+    cert_file: /etc/loki/certs/fullchain.pem
+    key_file: /etc/loki/certs/privkey.pem
+
+limits_config:
+  retention_period: 7d
+
+compactor:
+  working_directory: /tmp/loki/retention
+  retention_enabled: true
+  retention_delete_delay: 2h
+  delete_request_store: filesystem
+
+common:
+  instance_addr: 127.0.0.1
+  path_prefix: /loki
+  storage:
+    filesystem:
+      chunks_directory: /loki/chunks
+      rules_directory: /loki/rules
+  replication_factor: 1
+  ring:
+    kvstore:
+      store: inmemory
+
+schema_config:
+  configs:
+    - from: 2020-10-24
+      store: tsdb
+      object_store: filesystem
+      schema: v13
+      index:
+        prefix: index_
+        period: 24h
+
+analytics:
+  reporting_enabled: false
+```
+
+**📋 Tasks Breakdown**
+
+* **Create directories**: Ensures that the necessary directories for configuration and certificates exist.
+* **Copy docker-compose.yml**: Deploys the `docker-compose.yml` file for starting the Loki container.
+* **Copy loki config**: Copies the custom Loki configuration file (`local-config.yaml`) to the specified directory.
+* **Copy loki certs**: Copies the TLS certificates to secure the Loki HTTP server.
+* **Start docker**: Launches the Loki container using Docker Compose.
+
+**🔄 Handlers**
+
+* **Restart Loki**: Restarts the Loki container when configuration files or certificates are updated.
+
+```yaml
+- name: Restart loki
+  ansible.builtin.command: docker-compose restart loki
+  args:
+    chdir: "{{ loki_directory }}"
+  changed_when: false
+```
+
+</details>
+
 ### 📄 `nginx`
 
 <details>
@@ -917,6 +1187,133 @@ privatebin:
 **🔧 Requirements**
 
 - Docker and Docker Compose must be installed on the target machine
+
+</details>
+
+### 📄 `prometheus`
+
+<details>
+<summary>Click to expand the <code>prometheus</code> role documentation</summary>
+
+Installs and configures [Prometheus](https://prometheus.io/), a powerful open-source monitoring and alerting toolkit, to collect and store metrics from configured targets. This role sets up Prometheus with Docker Compose and provides a custom configuration for scraping multiple targets.
+
+**✅ Features**
+
+* Creates necessary directories for Prometheus data and configuration
+* Deploys Prometheus container using Docker Compose
+* Configures Prometheus with a custom `prometheus.yml` file
+* Supports integration with SNMP, Blackbox exporter, Node exporter, and cAdvisor
+* Configures multiple external networks for Prometheus container communication
+* Handles network and volume configurations in Docker Compose
+
+**📁 Directory Structure**
+
+```text
+prometheus/
+├── defaults/
+│   └── main.yml        # Default variables for Prometheus configuration
+├── handlers/
+│   └── main.yml        # Handlers for restarting Prometheus service
+├── tasks/
+│   └── main.yml        # Main tasks for setup and configuration
+├── templates/
+│   ├── docker-compose.yml  # Docker Compose template for Prometheus setup
+│   └── prometheus.yml     # Prometheus configuration template
+```
+
+**⚙️ Default Configuration (`defaults/main.yml`)**
+
+```yaml
+prometheus_directory: /opt/prometheus  # Directory where Prometheus will be installed
+prometheus_external_networks:
+  - blackbox_default  # External networks Prometheus will use for scraping
+  - snmpexporter_default
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+  - job_name: 'snmp'
+    metrics_path: /snmp
+    params:
+      module:
+        - if_mib
+    static_configs:
+      - targets: ['hostC']
+    relabel_configs:
+      - source_labels: ['__address__']
+        target_label: '__param_target'
+      - source_labels: ['__param_target']
+        target_label: 'instance'
+      - target_label: '__address__'
+        replacement: 'snmp-exporter:9116'
+  # More scrape configurations (Node Exporter, Blackbox Exporter, cAdvisor) here...
+```
+
+* `prometheus_directory`: Specifies the directory where Prometheus and its configuration will be installed.
+* `prometheus_external_networks`: List of external networks Prometheus will join for scraping metrics.
+
+**📋 Tasks**
+
+* **Create directories**: Ensures that the necessary directories for Prometheus data and configuration exist.
+* **Copy docker-compose.yml**: Deploys the `docker-compose.yml` file for starting the Prometheus container.
+* **Template prometheus config**: Templates the `prometheus.yml` configuration file, which contains the scrape targets and other settings.
+* **Start docker**: Launches the Prometheus container using Docker Compose (`docker-compose up -d`).
+
+**📝 Templates**
+
+* `templates/docker-compose.yml`: Defines the Prometheus container setup, including ports, volumes, and network configuration.
+* `templates/prometheus.yml`: The main Prometheus configuration file, which includes global settings and scrape configurations for various exporters (e.g., Node Exporter, Blackbox Exporter, SNMP).
+
+**🔧 Requirements**
+
+* Docker and Docker Compose must be installed on the target machine
+
+**📋 Example Prometheus Configuration (`templates/prometheus.yml`)**
+
+```yaml
+global:
+  scrape_interval: 30s  # Scrape interval for collecting metrics
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+  - job_name: 'snmp'
+    metrics_path: /snmp
+    params:
+      module:
+        - if_mib
+    static_configs:
+      - targets: ['hostC']
+    relabel_configs:
+      - source_labels: ['__address__']
+        target_label: '__param_target'
+      - source_labels: ['__param_target']
+        target_label: 'instance'
+      - target_label: '__address__'
+        replacement: 'snmp-exporter:9116'
+  # Additional scrape configurations...
+```
+
+**📋 Tasks Breakdown**
+
+* **Create directories**: Ensures that necessary directories exist for Prometheus.
+* **Copy docker-compose.yml**: Deploys the `docker-compose.yml` file for starting the Prometheus container.
+* **Template prometheus config**: Templates the `prometheus.yml` file based on the variables defined in the role.
+* **Start docker**: Launches the Prometheus service using Docker Compose, allowing for monitoring and metrics collection.
+
+**🔄 Handlers**
+
+* **Restart Prometheus**: Restarts the Prometheus container when configuration changes.
+
+```yaml
+- name: Restart prometheus
+  ansible.builtin.command: docker-compose restart prometheus
+  args:
+    chdir: "{{ prometheus_directory }}"
+  changed_when: false
+```
 
 </details>
 
@@ -1168,6 +1565,81 @@ no_proxy: "localhost,127.0.0.1,10.0.0.0/16,192.168.0.0/16,172.16.0.0/12"
 
 </details>
 
+### 📄 `rsyslog`
+
+<details>
+<summary>Click to expand the <code>rsyslog</code> role documentation</summary>
+
+Installs and configures [rsyslog](https://www.rsyslog.com/), a reliable and highly configurable system logging daemon, using Docker Compose to manage the service.
+
+**✅ Features**
+
+* Creates the necessary directory structure for rsyslog configuration
+* Deploys a templated `docker-compose.yml` for Docker container setup
+* Configures rsyslog to listen on specific UDP ports and route logs to designated files
+* Supports easy modification of log file paths and ports
+* Allows customization of rsyslog configuration via a Jinja2 template
+
+**📁 Directory Structure**
+
+```text
+rsyslog/
+├── defaults/
+│   └── main.yml        # Default variables for rsyslog configuration
+├── handlers/
+│   └── main.yml        # Handlers for restarting the rsyslog service
+├── tasks/
+│   └── main.yml        # Main tasks for setup and configuration
+├── templates/
+│   ├── docker-compose.yml  # Docker Compose template for rsyslog setup
+│   └── rsyslog.conf       # rsyslog configuration template
+```
+
+**⚙️ Default Configuration (`defaults/main.yml`)**
+
+```yaml
+rsyslog_directory: /opt/rsyslog  # Directory where rsyslog configuration is stored
+
+rsyslog_udp_ports:
+  - port: 514
+    log_file: "/var/log/app1.log"
+  - port: 515
+    log_file: "/var/log/app2.log"
+```
+
+* `rsyslog_directory`: Specifies the root path where rsyslog will be installed.
+* `rsyslog_udp_ports`: List of UDP ports to be used by rsyslog, along with the log file path for each port.
+
+**📋 Tasks**
+
+* Creates necessary directories for rsyslog configuration and logs
+* Deploys the `docker-compose.yml` file using Jinja2 templating
+* Templates the `rsyslog.conf` configuration file and notifies rsyslog restart
+* Starts the rsyslog service using Docker Compose (`docker-compose up -d`)
+
+**📝 Templates**
+
+* `templates/docker-compose.yml`: Defines the rsyslog container, ports, volumes, and mounts.
+* `templates/rsyslog.conf`: Defines the rsyslog configuration, including the UDP input and file outputs for each port.
+
+**🔧 Requirements**
+
+* Docker and Docker Compose must be installed on the target machine
+
+**📋 Handlers**
+
+* **Restart rsyslog**: Ensures that rsyslog restarts when the configuration is updated.
+
+```yaml
+- name: Restart rsyslog
+  ansible.builtin.command: docker-compose restart rsyslog
+  args:
+    chdir: "{{ rsyslog_directory }}"
+  changed_when: false
+```
+
+</details>
+
 ### 📄 `semaphore`
 
 <details>
@@ -1237,6 +1709,70 @@ no_proxy: "localhost,127.0.0.1,10.0.0.0/16,192.168.0.0/16,172.16.0.0/12"
 **🔧 Requirements**
 
 - Docker and Docker Compose must be installed on the target machine
+
+</details>
+
+### 📄 `snmpexporter`
+
+<details>
+<summary>Click to expand the <code>snmpexporter</code> role documentation</summary>
+
+Installs and configures the [SNMP Exporter](https://github.com/prometheus/snmp_exporter), a Prometheus exporter for collecting SNMP metrics, using Docker Compose to manage the service.
+
+**✅ Features**
+
+* Creates the necessary directory structure for SNMP Exporter configuration
+* Deploys a templated `docker-compose.yml` for Docker container setup
+* Configures SNMP Exporter using the official Prometheus SNMP Exporter image
+* Supports time zone and local time configuration using Docker volumes
+
+**📁 Directory Structure**
+
+```text
+snmpexporter/
+├── defaults/
+│   └── main.yml        # Default variables for SNMP Exporter configuration
+├── tasks/
+│   └── main.yml        # Main tasks for setup and configuration
+├── templates/
+│   └── docker-compose.yml  # Docker Compose template for SNMP Exporter setup
+```
+
+**⚙️ Default Configuration (`defaults/main.yml`)**
+
+```yaml
+snmpexporter_directory: /opt/snmpexporter  # Directory where SNMP Exporter configuration is stored
+```
+
+* `snmpexporter_directory`: Specifies the root path where SNMP Exporter will be installed.
+
+**📋 Tasks**
+
+* Creates necessary directories for SNMP Exporter configuration
+* Deploys the `docker-compose.yml` file using Jinja2 templating
+* Starts the SNMP Exporter service using Docker Compose (`docker-compose up -d`)
+
+**📝 Templates**
+
+* `templates/docker-compose.yml`: Defines the SNMP Exporter container setup, volumes, and configuration for time zone and local time.
+
+**🔧 Requirements**
+
+* Docker and Docker Compose must be installed on the target machine
+
+**📋 Tasks**
+
+* **Create directories**: Creates the directory structure for SNMP Exporter.
+* **Copy docker-compose.yml**: Deploys the `docker-compose.yml` file using a template.
+* **Start docker**: Launches the SNMP Exporter container with `docker-compose up -d`.
+
+```yaml
+- name: Start docker
+  ansible.builtin.command: docker-compose up -d
+  args:
+    chdir: "{{ snmpexporter_directory }}"
+  changed_when: false
+```
 
 </details>
 

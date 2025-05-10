@@ -1,0 +1,7 @@
+rsyslog_directory: /opt/rsyslog
+
+rsyslog_udp_ports:
+  - port: 514
+    log_file: "/var/log/app1.log"
+  - port: 515
+    log_file: "/var/log/app2.log"

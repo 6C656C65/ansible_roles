@@ -1,0 +1,2 @@
+loki_directory: /opt/loki
+# loki_cert_source_override: /opt/loki/certs

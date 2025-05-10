@@ -1,0 +1,5 @@
+- name: Restart prometheus
+  ansible.builtin.command: docker-compose restart prometheus
+  args:
+    chdir: "{{ prometheus_directory }}"
+  changed_when: false

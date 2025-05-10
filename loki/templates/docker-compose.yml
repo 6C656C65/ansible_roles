@@ -1,0 +1,18 @@
+services:
+  loki:
+    image: grafana/loki:latest
+    container_name: loki
+    restart: unless-stopped
+    command: -config.file=/etc/loki/local-config.yaml
+    ports:
+      - 3100:3100
+    volumes:
+      - loki-data:/loki
+      - ./local-config.yaml:/etc/loki/local-config.yaml
+      - ./certs:/etc/loki/certs
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+
+volumes:
+  loki-data:
+    name: loki-data

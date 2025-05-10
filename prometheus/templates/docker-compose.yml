@@ -1,0 +1,32 @@
+services:
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    restart: unless-stopped
+    volumes:
+      - prometheus-data:/prometheus
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    ports:
+      - 9090:9090
+    networks:
+      - prometheus
+{% for ext_net in prometheus_external_networks %}
+      - {{ ext_net }}
+{% endfor %}
+
+networks:
+  prometheus:
+    name: prometheus_default
+{% for ext_net in prometheus_external_networks %}
+  {{ ext_net }}:
+    external: true
+    name: {{ ext_net }}
+{% endfor %}
+
+volumes:
+  prometheus-data:
+    name: prometheus-data

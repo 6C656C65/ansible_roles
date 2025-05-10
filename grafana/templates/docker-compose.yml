@@ -1,0 +1,93 @@
+services:
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    restart: unless-stopped
+    environment:
+      - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
+{% if grafana_global.root_url is defined %}
+      - GF_SERVER_ROOT_URL={{ grafana_global.root_url }}
+{% endif %}
+{% if grafana_global.auth_anonymous_enabled is defined %}
+      - GF_AUTH_ANONYMOUS_ENABLED={{ grafana_global.auth_anonymous_enabled }}
+{% endif %}
+      - GF_AUTH_BASIC_ENABLED=true
+{% if grafana_security.admin_user is defined %}
+      - GF_SECURITY_ADMIN_USER={{ grafana_security.admin_user }}
+{% endif %}
+{% if grafana_security.admin_email is defined %}
+      - GF_SECURITY_ADMIN_EMAIL={{ grafana_security.admin_email }}
+{% endif %}
+{% if grafana_security.admin_password is defined %}
+      - GF_SECURITY_ADMIN_PASSWORD={{ grafana_security.admin_password }}
+{% endif %}
+{% if grafana_users.allow_sign_up is defined %}
+      - GF_USERS_ALLOW_SIGN_UP={{ grafana_users.allow_sign_up }}
+{% endif %}
+{% if grafana_users.verify_email is defined %}
+      - GF_USERS_VERIFY_EMAIL_ENABLED={{ grafana_users.verify_email }}
+{% endif %}
+{% if grafana_users.default_language is defined %}
+      - GF_USERS_DEFAULT_LANGUAGE={{ grafana_users.default_language }}
+{% endif %}
+{% if grafana_users.default_org_name is defined %}
+      - GF_USERS_DEFAULT_ORG_NAME={{ grafana_users.default_org_name }}
+{% endif %}
+{% if grafana_users.default_org_role is defined %}
+      - GF_USERS_DEFAULT_ORG_ROLE={{ grafana_users.default_org_role }}
+{% endif %}
+{% if grafana_smtp.enabled is defined %}
+      - GF_SMTP_ENABLED={{ grafana_smtp.enabled }}
+{% endif %}
+{% if grafana_smtp.host is defined %}
+      - GF_SMTP_HOST={{ grafana_smtp.host }}
+{% endif %}
+{% if grafana_smtp.user is defined %}
+      - GF_SMTP_USER={{ grafana_smtp.user }}
+{% endif %}
+{% if grafana_smtp.pass is defined %}
+      - GF_SMTP_PASSWORD={{ grafana_smtp.pass }}
+{% endif %}
+{% if grafana_smtp.from_addr is defined %}
+      - GF_SMTP_FROM_ADDRESS={{ grafana_smtp.from_addr }}
+{% endif %}
+{% if grafana_smtp.from_name is defined %}
+      - GF_SMTP_FROM_NAME={{ grafana_smtp.from_name }}
+{% endif %}
+{% if grafana_global.timezone is defined %}
+      - GF_DATE_FORMATS_DEFAULT_TIMEZONE={{ grafana_global.timezone }}
+{% endif %}
+{% if grafana_global.week_start is defined %}
+      - GF_DATE_FORMATS_WEEK_START={{ grafana_global.week_start }}
+{% endif %}
+{% if grafana_global.analytics_reporting is defined %}
+      - GF_ANALYTICS_REPORTING_ENABLED={{ grafana_global.analytics_reporting }}
+{% endif %}
+{% if grafana_global.feature_toogles is defined %}
+      - GF_FEATURE_TOGGLES_ENABLE={{ grafana_global.feature_toogles }}
+{% endif %}
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./provisioning/:/etc/grafana/provisioning/
+      - ./dashboards:/var/lib/grafana/dashboards
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - grafana
+{% for ext_net in grafana_external_networks %}
+      - {{ ext_net }}
+{% endfor %}
+
+
+networks:
+  grafana:
+    name: grafana_default
+{% for ext_net in grafana_external_networks %}
+  {{ ext_net }}:
+    external: true
+    name: {{ ext_net }}
+{% endfor %}
+
+volumes:
+  grafana-data:
+    name: grafana-data

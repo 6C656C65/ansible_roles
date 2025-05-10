@@ -1,0 +1,29 @@
+---
+- name: Create directories
+  ansible.builtin.file:
+    path: "{{ rsyslog_directory }}{{ item.name }}"
+    state: directory
+    mode: '0755'
+  with_items:
+    - { name: "/" }
+
+- name: Copy docker-compose.yml
+  ansible.builtin.template:
+    src: docker-compose.yml
+    dest: "{{ rsyslog_directory }}/docker-compose.yml"
+    mode: "0644"
+
+- name: Template rsyslog config
+  ansible.builtin.template:
+    src: "rsyslog.conf"
+    dest: "{{ rsyslog_directory }}/rsyslog.conf"
+    owner: root
+    group: root
+    mode: "0640"
+  notify: Restart rsyslog
+
+- name: Start docker
+  ansible.builtin.command: docker-compose up -d
+  args:
+    chdir: "{{ rsyslog_directory }}"
+  changed_when: false

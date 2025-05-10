@@ -1,0 +1,14 @@
+services:
+  rsyslog:
+    image: rsyslog/syslog_appliance_alpine
+    container_name: rsyslog
+    restart: unless-stopped
+    ports:
+{% for item in rsyslog_udp_ports %}
+      - "{{ item.port }}:{{ item.port }}/udp"
+{% endfor %}
+    volumes:
+      - ./rsyslog.conf:/etc/rsyslog.conf
+      - /var/log/syslog:/var/log/
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro

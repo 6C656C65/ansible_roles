@@ -1,0 +1,5 @@
+- name: Restart grafana
+  ansible.builtin.command: docker-compose restart grafana
+  args:
+    chdir: "{{ grafana_directory }}"
+  changed_when: false

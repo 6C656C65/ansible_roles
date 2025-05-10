@@ -1,0 +1,5 @@
+- name: Restart loki
+  ansible.builtin.command: docker-compose restart loki
+  args:
+    chdir: "{{ loki_directory }}"
+  changed_when: false

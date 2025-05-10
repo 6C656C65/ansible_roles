@@ -1,0 +1,7 @@
+global:
+  scrape_interval: {{ scrape_interval | default('30s') }}
+
+scrape_configs:
+{% for config in scrape_configs %}
+  - {{ config | to_nice_yaml(indent=4) | indent(4) }}
+{% endfor %}

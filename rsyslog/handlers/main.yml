@@ -1,0 +1,5 @@
+- name: Restart rsyslog
+  ansible.builtin.command: docker-compose restart rsyslog
+  args:
+    chdir: "{{ rsyslog_directory }}"
+  changed_when: false

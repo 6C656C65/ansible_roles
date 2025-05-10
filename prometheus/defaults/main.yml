@@ -1,0 +1,63 @@
+prometheus_directory: /opt/prometheus
+
+prometheus_external_networks:
+  - blackbox_default
+  - snmpexporter_default
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  - job_name: 'snmp'
+    metrics_path: /snmp
+    params:
+      module:
+        - if_mib
+    static_configs:
+      - targets: ['hostC']
+    relabel_configs:
+      - source_labels: ['__address__']
+        target_label: '__param_target'
+      - source_labels: ['__param_target']
+        target_label: 'instance'
+      - target_label: '__address__'
+        replacement: 'snmp-exporter:9116'
+
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets:
+          - hostA:9100
+          - hostB:9100
+          - hostC:9100
+
+  - job_name: 'blackbox-http'
+    scrape_timeout: 15s
+    scrape_interval: 15s
+    metrics_path: /probe
+    params:
+      module: ['http_2xx']
+    static_configs:
+      - targets:
+          - https://vaultwarden.company.com
+          - https://privatebin.company.com
+          - https://semaphore.company.com
+    relabel_configs:
+      - source_labels: ['__address__']
+        target_label: '__param_target'
+      - source_labels: ['__param_target']
+        target_label: 'instance'
+      - target_label: '__address__'
+        replacement: 'blackbox-exporter:9115'
+
+  - job_name: 'cadvisor'
+    static_configs:
+      - targets:
+          - hostA:8080
+          - hostB:8080
+          - hostC:8080
+
+  - job_name: 'caddy'
+    static_configs:
+      - targets:
+          - hostA:2019

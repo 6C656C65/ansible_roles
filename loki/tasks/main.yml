@@ -1,0 +1,39 @@
+---
+- name: Create directories
+  ansible.builtin.file:
+    path: "{{ loki_directory }}{{ item.name }}"
+    state: directory
+    mode: '0755'
+  with_items:
+    - { name: "/" }
+    - { name: "/certs" }
+
+- name: Copy docker-compose.yml
+  ansible.builtin.template:
+    src: docker-compose.yml
+    dest: "{{ loki_directory }}/docker-compose.yml"
+    mode: "0644"
+
+- name: Copy loki config
+  ansible.builtin.copy:
+    src: "files/local-config.yaml"
+    dest: "{{ loki_directory }}/local-config.yaml"
+    owner: "1000"
+    group: "1000"
+    mode: "744"
+  notify: Restart loki
+
+- name: Copy loki certs
+  ansible.builtin.copy:
+    src: "{{ (loki_cert_source_override | default(role_path ~ '/files')) ~ '/' }}/"
+    dest: "{{ loki_directory }}"
+    owner: "1000"
+    group: "1000"
+    mode: "744"
+  notify: Restart loki
+
+- name: Start docker
+  ansible.builtin.command: docker-compose up -d
+  args:
+    chdir: "{{ loki_directory }}"
+  changed_when: false
