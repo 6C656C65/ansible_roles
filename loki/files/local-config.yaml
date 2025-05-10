@@ -2,9 +2,6 @@ auth_enabled: false
 
 server:
   http_listen_port: 3100
-  http_tls_config:
-    cert_file: /etc/loki/certs/fullchain.pem
-    key_file: /etc/loki/certs/privkey.pem
 
 limits_config:
   retention_period: 7d
