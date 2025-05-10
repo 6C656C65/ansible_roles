@@ -1,0 +1,4 @@
+exclude_paths:
+  - .github/
+  - .ansible-lint.yml
+  - grafana/files/provisioning/alerting/alerting.yaml
