@@ -9,7 +9,6 @@ services:
     volumes:
       - loki-data:/loki
       - ./local-config.yaml:/etc/loki/local-config.yaml
-      - ./certs:/etc/loki/certs
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
 
