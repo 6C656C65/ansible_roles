@@ -15,7 +15,7 @@
 
 - name: Copy loki config
   ansible.builtin.copy:
-    src: "files"
+    src: "files/"
     dest: "{{ loki_directory }}"
     owner: "1000"
     group: "1000"
