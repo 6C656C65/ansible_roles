@@ -1,4 +1,5 @@
 grafana_directory: /opt/grafana
+# grafana_provisioning_source_override: /opt/grafana/files
 
 grafana_external_networks:
   - loki_default
