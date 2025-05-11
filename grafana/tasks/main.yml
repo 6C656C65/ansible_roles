@@ -17,7 +17,7 @@
 
 - name: Copy grafana files
   ansible.builtin.copy:
-    src: "{{ (grafana_provisioning_source_override | default(role_path ~ '/files')) ~ '/' }}/"
+    src: "{{ grafana_provisioning_source_override | default(role_path + '/files') }}/"
     dest: "{{ grafana_directory }}"
     owner: "1000"
     group: "1000"
