@@ -10,8 +10,6 @@ services:
       - /etc/localtime:/etc/localtime:ro
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
-    ports:
-      - 9090:9090
     networks:
       - prometheus
 {% for ext_net in prometheus_external_networks %}
