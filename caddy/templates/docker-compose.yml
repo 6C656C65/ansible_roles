@@ -1,3 +1,5 @@
+{% set networks = backend[inventory_hostname] | selectattr('network', 'defined') | list %}
+
 services:
   caddy:
     image: caddy:2
@@ -13,14 +15,14 @@ services:
       - "80:80"
       - "443:443"
       - "2019:2019"
-{% if backend[inventory_hostname] is defined and backend[inventory_hostname] | length > 0 %}
+{% if networks | length > 0 %}
     networks:
 {% for item in backend[inventory_hostname] %}
       {{ item.network }}:
 {% endfor %}
 {% endif %}
 
-{% if backend[inventory_hostname] is defined and backend[inventory_hostname] | length > 0 %}
+{% if networks | length > 0 %}}
 networks:
 {% for item in backend[inventory_hostname] %}
   {{ item.network }}:
