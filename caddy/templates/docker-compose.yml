@@ -13,16 +13,20 @@ services:
       - "80:80"
       - "443:443"
       - "2019:2019"
+{% if backend[inventory_hostname] is defined and backend[inventory_hostname] | length > 0 %}
     networks:
 {% for item in backend[inventory_hostname] %}
       {{ item.network }}:
 {% endfor %}
+{% endif %}
 
+{% if backend[inventory_hostname] is defined and backend[inventory_hostname] | length > 0 %}
 networks:
 {% for item in backend[inventory_hostname] %}
   {{ item.network }}:
     external: true
 {% endfor %}
+{% endif %}
 
 volumes:
   caddy-data:
