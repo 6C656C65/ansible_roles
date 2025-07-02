@@ -10,8 +10,10 @@
     dest: "{{ item.dest }}"
     mode: '0755'
   with_items:
-    - { src: ascii_motd, dest: "/etc/update-motd.d/{{ motd_ascii_file }}" }
-    - { src: sshd_config, dest: /etc/ssh/sshd_config }
+    - src: "{{ ascii_motd_override | default('ascii_motd') }}"
+      dest: "/etc/update-motd.d/{{ motd_ascii_file }}"
+    - src: "{{ sshd_config_override | default('sshd_config') }}"
+      dest: /etc/ssh/sshd_config
   notify: Restart sshd daemon
 
 - name: Delete static MOTD

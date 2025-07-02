@@ -1,1 +1,3 @@
 motd_ascii_file: "99-ascii"
+# sshd_config_override: ../sshd_config
+# ascii_motd_override: ../ascii_motd
