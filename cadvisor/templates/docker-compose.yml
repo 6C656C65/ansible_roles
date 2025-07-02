@@ -1,10 +1,12 @@
+{% set ip_8080 = cadvisor_listen_ip_8080 | default('0.0.0.0') %}
+
 services:
   cadvisor:
     image: gcr.io/cadvisor/cadvisor:latest
     container_name: cadvisor
     restart: unless-stopped
     ports:
-      - "8080:8080"
+      - "{{ ip_8080 }}:8080:8080"
     volumes:
       - /:/rootfs:ro
       - /var/run:/var/run:ro
