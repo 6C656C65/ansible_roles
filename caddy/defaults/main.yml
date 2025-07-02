@@ -1,5 +1,7 @@
 caddy_directory: /opt/caddy
 # caddy_cert_source_override: /opt/caddy/certs
+# caddy_listen_ip_80_443: 0.0.0.0
+# caddy_listen_ip_2019: 0.0.0.0
 
 backend:
   hostA:
