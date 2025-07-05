@@ -4,6 +4,10 @@ services:
     container_name: loki
     restart: unless-stopped
     command: -config.file=/etc/loki/local-config.yaml
+{% if loki_bind_ip is defined %}
+    ports:
+      - "{{ loki_bind_ip }}:3100:3100"
+{% endif %}
     volumes:
       - loki-data:/loki
       - ./local-config.yaml:/etc/loki/local-config.yaml
