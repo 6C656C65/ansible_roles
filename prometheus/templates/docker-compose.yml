@@ -12,18 +12,22 @@ services:
       - '--config.file=/etc/prometheus/prometheus.yml'
     networks:
       - prometheus
+{% if prometheus_external_networks is defined and prometheus_external_networks %}
 {% for ext_net in prometheus_external_networks %}
       - {{ ext_net }}
 {% endfor %}
+{% endif %}
 
 networks:
   prometheus:
     name: prometheus_default
+{% if prometheus_external_networks is defined and prometheus_external_networks %}
 {% for ext_net in prometheus_external_networks %}
   {{ ext_net }}:
     external: true
     name: {{ ext_net }}
 {% endfor %}
+{% endif %}
 
 volumes:
   prometheus-data:
