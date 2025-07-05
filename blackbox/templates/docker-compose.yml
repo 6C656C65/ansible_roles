@@ -5,5 +5,9 @@ services:
     restart: unless-stopped
     volumes:
       - ./blackbox.yml:/config/blackbox.yml
+{% if blackbox_bind_ip is defined %}
+    ports:
+      - "{{ blackbox_bind_ip }}:9115:9115"
+{% endif %}
     command:
       - '--config.file=/config/blackbox.yml'
