@@ -10,6 +10,10 @@ services:
       - /etc/localtime:/etc/localtime:ro
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
+{% if prometheus_bind_ip is defined %}
+    ports:
+      - "{{ prometheus_bind_ip }}:9090:9090"
+{% endif %}
     networks:
       - prometheus
 {% if prometheus_external_networks is defined and prometheus_external_networks %}
