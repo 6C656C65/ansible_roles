@@ -66,6 +66,10 @@ services:
 {% if grafana_global.feature_toogles is defined %}
       - GF_FEATURE_TOGGLES_ENABLE={{ grafana_global.feature_toogles }}
 {% endif %}
+{% if grafana_bind_ip is defined %}
+    ports:
+      - "{{ grafana_bind_ip }}:3000:3000"
+{% endif %}
     volumes:
       - grafana-data:/var/lib/grafana
       - ./provisioning/:/etc/grafana/provisioning/
