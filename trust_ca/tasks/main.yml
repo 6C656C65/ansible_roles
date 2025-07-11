@@ -7,5 +7,5 @@
     group: root
     mode: '0644'
   with_fileglob:
-    - "files/*.crt"
+    - "{{ trust_ca_override_folder | default('files') }}/*.crt"
   notify: Updating CA certificates
