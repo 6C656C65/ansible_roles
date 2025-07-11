@@ -1,5 +1,6 @@
 loki_url: https://loki.company.com:3100/
 promtail_folder: /etc/promtail
+promtail_root_ca_path: /etc/ssl/certs/root_ca.pem
 
 promtail_jobs:
   all:

@@ -8,7 +8,7 @@ positions:
 clients:
   - url: {{ loki_url }}loki/api/v1/push
     tls_config:
-      ca_file: /etc/ssl/certs/fgs-root-ca.pem
+      ca_file: {{ promtail_root_ca_path }}
       insecure_skip_verify: false 
 
 scrape_configs:
