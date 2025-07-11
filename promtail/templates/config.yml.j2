@@ -12,6 +12,7 @@ clients:
       insecure_skip_verify: false 
 
 scrape_configs:
+{% if 'all' in promtail_jobs %}
 {% for job in promtail_jobs['all'] %}
   - job_name: {{ job.job_name }}
     static_configs:
@@ -22,6 +23,7 @@ scrape_configs:
           {{ key }}: {{ value }}
 {% endfor %}
 {% endfor %}
+{% endif %}
 
 {% for job in promtail_jobs[inventory_hostname] | default([]) %}
   - job_name: {{ job.job_name }}
