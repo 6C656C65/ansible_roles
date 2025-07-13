@@ -10,7 +10,11 @@ grafana_global:
   auth_anonymous_enabled: true
   timezone: America/New York
   week_start: Monday
+  analytics: false
   analytics_reporting: false
+  analytics_check_updates: false
+  analytics_check_plugin_updates: false
+  analytics_feedback_links: false
   feature_toogles: alertingSimplifiedRouting,alertingQueryAndExpressionsStepMode
 
 grafana_security:

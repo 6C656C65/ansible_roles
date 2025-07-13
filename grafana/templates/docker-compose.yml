@@ -60,8 +60,20 @@ services:
 {% if grafana_global.week_start is defined %}
       - GF_DATE_FORMATS_WEEK_START={{ grafana_global.week_start }}
 {% endif %}
+{% if grafana_global.analytics is defined %}
+      - GF_ANALYTICS_ENABLED={{ grafana_global.analytics }}
+{% endif %}
 {% if grafana_global.analytics_reporting is defined %}
       - GF_ANALYTICS_REPORTING_ENABLED={{ grafana_global.analytics_reporting }}
+{% endif %}
+{% if grafana_global.analytics_check_updates is defined %}
+      - GF_ANALYTICS_CHECK_FOR_UPDATES={{ grafana_global.analytics_check_updates }}
+{% endif %}
+{% if grafana_global.analytics_check_plugin_updates is defined %}
+      - GF_ANALYTICS_CHECK_FOR_PLUGIN_UPDATES={{ grafana_global.analytics_check_plugin_updates }}
+{% endif %}
+{% if grafana_global.analytics_feedback_links is defined %}
+      - GF_ANALYTICS_FEEDBACK_LINKS_ENABLED={{ grafana_global.analytics_feedback_links }}
 {% endif %}
 {% if grafana_global.feature_toogles is defined %}
       - GF_FEATURE_TOGGLES_ENABLE={{ grafana_global.feature_toogles }}
