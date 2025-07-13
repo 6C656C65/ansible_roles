@@ -3,8 +3,12 @@ auth_enabled: false
 server:
   http_listen_port: 3100
 
+{% if loki_limits_config is defined and loki_limits_config %}
 limits_config:
-  retention_period: 7d
+{% for key, value in loki_limits_config.items() %}
+  {{ key }}: {{ value }}
+{% endfor %}
+{% endif %}
 
 compactor:
   working_directory: /tmp/loki/retention

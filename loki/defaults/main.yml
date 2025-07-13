@@ -1,1 +1,4 @@
 loki_directory: /opt/loki
+
+loki_limits_config:
+  retention_period: 7d

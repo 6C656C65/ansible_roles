@@ -14,9 +14,9 @@
     mode: "0644"
 
 - name: Copy loki config
-  ansible.builtin.copy:
-    src: "files/"
-    dest: "{{ loki_directory }}"
+  ansible.builtin.template:
+    src: "local-config.yaml"
+    dest: "{{ loki_directory }}/local-config.yaml"
     owner: "1000"
     group: "1000"
     mode: "744"
