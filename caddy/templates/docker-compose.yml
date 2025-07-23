@@ -24,7 +24,7 @@ services:
 {% endfor %}
 {% endif %}
 
-{% if networks | length > 0 %}}
+{% if networks | length > 0 %}
 networks:
 {% for item in backend[inventory_hostname] %}
   {{ item.network }}:
