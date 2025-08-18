@@ -19,14 +19,14 @@ services:
       - "{{ ip_2019 }}:2019:2019"
 {% if networks | length > 0 %}
     networks:
-{% for item in backend[inventory_hostname] %}
+{% for item in networks %}
       {{ item.network }}:
 {% endfor %}
 {% endif %}
 
 {% if networks | length > 0 %}
 networks:
-{% for item in backend[inventory_hostname] %}
+{% for item in networks %}
   {{ item.network }}:
     external: true
 {% endfor %}
