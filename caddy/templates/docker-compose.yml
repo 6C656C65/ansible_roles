@@ -1,6 +1,8 @@
-{% set networks = backend[inventory_hostname] | selectattr('network', 'defined') | list %}
 {% set ip_80_443 = caddy_listen_ip_80_443 | default('0.0.0.0') %}
 {% set ip_2019 = caddy_listen_ip_2019 | default('0.0.0.0') %}
+
+{% set networks = backend[inventory_hostname] | selectattr('network', 'defined') | list %}
+{% set volumes = backend[inventory_hostname] | selectattr('volume', 'defined') | list %} 
 
 services:
   caddy:
@@ -13,6 +15,9 @@ services:
       - /var/log/caddy:/var/log/caddy
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
+{% for item in volumes %}
+      - {{ item.volume }}
+{% endfor %}
     ports:
       - "{{ ip_80_443 }}:80:80"
       - "{{ ip_80_443 }}:443:443"
