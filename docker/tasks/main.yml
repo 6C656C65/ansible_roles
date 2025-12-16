@@ -4,7 +4,7 @@
     name: '{{ item.name }}'
     state: present
   with_items:
-    - { name: docker }
+    - { name: docker.io }
     - { name: docker-compose }
 
 - name: Add users to the docker group
