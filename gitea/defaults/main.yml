@@ -1,0 +1,3 @@
+gitea_directory: /opt/gitea
+gitea_url: gitea.company.com
+gitea_ssh_port: 2222

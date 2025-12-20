@@ -1,0 +1,18 @@
+---
+- name: Create necessary directories
+  ansible.builtin.file:
+    path: "{{ gitea_directory }}"
+    state: directory
+    mode: '0755'
+
+- name: Copy host-specific docker-compose.yml
+  ansible.builtin.template:
+    src: "docker-compose.yml"
+    dest: "{{ gitea_directory }}/docker-compose.yml"
+    mode: '0644'
+
+- name: Start gitea service
+  ansible.builtin.command: docker compose up -d
+  args:
+    chdir: "{{ gitea_directory }}"
+  changed_when: false

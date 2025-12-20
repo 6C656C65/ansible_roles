@@ -19,6 +19,7 @@
    - [dns](#-dns)
    - [docker](#-docker)
    - [fail2ban](#-fail2ban)
+   - [gitea](#-gitea)
    - [grafana](#-grafana)
    - [grub](#-grub)
    - [iptables](#-iptables)
@@ -548,6 +549,77 @@ fail2ban_source_file: /etc/fail2ban/jail.conf
 **🔁 Handlers**
 
 - `Restart fail2ban`: Restarts the Fail2Ban service when the configuration file is modified.
+
+</details>
+
+### 📄 `gitea`
+
+<details>
+<summary>Click to expand the <code>gitea</code> role documentation</summary>
+
+Deploys and manages [Gitea](https://gitea.io/), a self-hosted Git service, using Docker Compose on Debian systems.
+
+**✅ Features**
+
+* Deploys Gitea using Docker Compose
+* Creates and manages a dedicated installation directory
+* Uses a persistent Docker volume for repositories and configuration
+* Exposes SSH access for Git operations on a custom port
+* Simple restart handler for configuration changes
+
+**📁 Structure**
+
+```text
+gitea/
+├── defaults/
+│   └── main.yml
+├── handlers/
+│   └── main.yml
+├── meta/
+│   └── main.yml
+├── tasks/
+│   └── main.yml
+├── templates/
+│   └── docker-compose.yml
+```
+
+**⚙️ Defaults (`defaults/main.yml`)**
+
+```yaml
+gitea_directory: /opt/gitea
+gitea_url: gitea.company.com
+gitea_ssh_port: 2222
+```
+
+* `gitea_directory`: Base directory on the target system where Gitea is deployed.
+* `gitea_url`: Public URL used to access the Gitea web interface.
+* `gitea_ssh_port`: SSH port exposed by the Gitea container for Git operations.
+
+**📋 Tasks**
+
+* **Create necessary directories**: Ensures the Gitea installation directory exists with proper permissions.
+* **Copy docker-compose configuration**: Renders and copies the `docker-compose.yml` file using a Jinja2 template.
+* **Start Gitea service**: Launches the Gitea container in detached mode using Docker Compose.
+
+**🔁 Handlers**
+
+* **Restart Gitea Docker**: Restarts the Gitea container when configuration changes.
+
+```yaml
+- name: Restart gitea docker
+  ansible.builtin.command: docker compose restart
+  args:
+    chdir: "{{ gitea_directory }}"
+  changed_when: false
+```
+
+**📦 Docker Compose**
+
+* Uses the official Gitea Docker image (`docker.gitea.com/gitea`)
+* Persists repositories, configuration, and data using a named Docker volume (`gitea-data`)
+* Exposes SSH for Git access on a configurable port (`gitea_ssh_port`)
+* Synchronizes container timezone with the host
+* Uses an isolated Docker network (`gitea`)
 
 </details>
 
