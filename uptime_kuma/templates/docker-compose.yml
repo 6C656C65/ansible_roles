@@ -1,0 +1,19 @@
+services:
+  uptime-kuma:
+    image: louislam/uptime-kuma:2.0.2
+    container_name: uptime-kuma
+    restart: unless-stopped
+    networks:
+      uptime-kuma:
+    environment:
+      - http_proxy={{ http_proxy }}
+      - https_proxy={{ https_proxy }}
+      - no_proxy={{ no_proxy }}
+    volumes:
+      - uptime-kuma-data:/app/data
+
+networks:
+  uptime-kuma:
+
+volumes:
+  uptime-kuma-data:

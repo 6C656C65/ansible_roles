@@ -1,0 +1,7 @@
+galaxy_info:
+  author: 6C656C65
+  description: "Role to install and configure Uptime Kuma (docker) on Debian"
+  license: "MIT"
+  min_ansible_version: "2.14"
+
+dependencies: []

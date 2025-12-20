@@ -39,6 +39,7 @@
    - [sshd](#-sshd)
    - [sysctl](#-sysctl)
    - [trust_ca](#-trust_ca)
+   - [uptime_kuma](#-uptime_kuma)
    - [users](#-users)
    - [vaultwarden](#-vaultwarden)
    - [version](#-version)
@@ -2010,6 +2011,76 @@ The `files/` directory contains the custom `.crt` files that will be added to th
 **🔁 Handlers**
 
 - **Updating CA certificates**: Runs the `update-ca-certificates` command to update the system's CA certificates.
+
+</details>
+
+### 📄 `uptime_kuma`
+
+<details>
+<summary>Click to expand the <code>uptime_kuma</code> role documentation</summary>
+
+Deploys and manages [Uptime Kuma](https://github.com/louislam/uptime-kuma), a self-hosted monitoring tool, using Docker Compose on Debian systems.
+
+**✅ Features**
+
+* Deploys Uptime Kuma using Docker Compose
+* Creates and manages a dedicated installation directory
+* Supports HTTP/HTTPS proxy configuration via environment variables
+* Uses a persistent Docker volume for monitoring data
+* Simple restart handler for configuration changes
+
+**📁 Structure**
+
+```text
+uptime_kuma/
+├── defaults/
+│   └── main.yml
+├── handlers/
+│   └── main.yml
+├── meta/
+│   └── main.yml
+├── tasks/
+│   └── main.yml
+├── templates/
+│   └── docker-compose.yml
+```
+
+**⚙️ Defaults (`defaults/main.yml`)**
+
+```yaml
+uptime_kuma_directory: /opt/uptime_kuma
+```
+
+* `uptime_kuma_directory`: Base directory on the target system where Uptime Kuma is deployed.
+
+**📋 Tasks**
+
+* **Create Uptime Kuma base directory**: Ensures the installation directory exists with proper permissions.
+* **Deploy docker-compose configuration**: Renders and copies the `docker-compose.yml` file using a Jinja2 template.
+* **Start Uptime Kuma using Docker Compose**: Launches the Uptime Kuma container in detached mode.
+
+**🔁 Handlers**
+
+* **Restart Uptime Kuma**: Restarts the Uptime Kuma service using Docker Compose when configuration changes.
+
+```yaml
+- name: Restart Uptime Kuma
+  ansible.builtin.command: docker-compose restart
+  args:
+    chdir: "{{ uptime_kuma_directory }}"
+  changed_when: false
+```
+
+**📦 Docker Compose**
+
+* Uses the `louislam/uptime-kuma` official Docker image
+* Exposes the default Uptime Kuma web interface port (3001) via Docker networking
+* Persists application data using a named Docker volume (`uptime-kuma-data`)
+* Supports proxy configuration using:
+
+  * `http_proxy`
+  * `https_proxy`
+  * `no_proxy`
 
 </details>
 
