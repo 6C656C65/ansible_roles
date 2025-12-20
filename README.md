@@ -800,6 +800,71 @@ This role applies firewall rules and logs blocked traffic as per the configurati
 
 </details>
 
+### 📄 `journalctl`
+
+<details>
+<summary>Click to expand the <code>journalctl</code> role documentation</summary>
+
+Configures `systemd-journald` to control log retention, disk usage, and automatic cleanup on Debian systems.
+
+**✅ Features**
+
+* Configures persistent journald storage limits
+* Enforces maximum disk usage and file size for logs
+* Automatically cleans up old logs exceeding defined size limits
+* Restarts `systemd-journald` to apply changes immediately
+
+**📁 Structure**
+
+```text
+journalctl/
+├── meta/
+│   └── main.yml
+└── tasks/
+    └── main.yml
+```
+
+**⚙️ Configuration**
+
+This role directly manages `/etc/systemd/journald.conf` using the `ini_file` module.
+
+Applied settings:
+
+* `SystemMaxUse`: Maximum disk space used by journald
+* `SystemKeepFree`: Minimum free disk space to preserve
+* `SystemMaxFileSize`: Maximum size per journal file
+
+```ini
+[Journal]
+SystemMaxUse=500M
+SystemKeepFree=1G
+SystemMaxFileSize=100M
+```
+
+**📋 Tasks**
+
+* **Configure journald**: Applies disk usage and retention limits to `journald.conf`
+* **Restart systemd-journald**: Ensures configuration changes take effect immediately
+* **Clean up journald logs**: Removes old logs exceeding 500 MB using `journalctl --vacuum-size`
+
+**🔧 Requirements**
+
+* Debian 12 (tested)
+* `systemd` and `systemd-journald`
+* `community.general` collection installed (for `ini_file`)
+
+```bash
+ansible-galaxy collection install community.general
+```
+
+**⚠️ Notes**
+
+* Existing logs may be truncated immediately after applying this role.
+* Ensure disk space limits are compatible with system workload and log volume.
+* This role does not manage volatile vs persistent storage (`Storage=` option).
+
+</details>
+
 ### 📄 `lldap`
 
 <details>

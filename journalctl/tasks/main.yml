@@ -1,0 +1,23 @@
+---
+- name: Configure journald
+  community.general.ini_file:
+    path: /etc/systemd/journald.conf
+    section: Journal
+    option: "{{ item.option }}"
+    value: "{{ item.value }}"
+    owner: root
+    group: root
+    mode: '0644'
+  loop:
+    - { option: 'SystemMaxUse', value: '500M' }
+    - { option: 'SystemKeepFree', value: '1G' }
+    - { option: 'SystemMaxFileSize', value: '100M' }
+
+- name: Restart systemd-journald
+  ansible.builtin.service:
+    name: systemd-journald
+    state: restarted
+
+- name: Clean up journald logs (> 500M)
+  ansible.builtin.command: journalctl --vacuum-size=500M
+  changed_when: true
