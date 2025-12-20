@@ -16,6 +16,7 @@
    - [blackbox](#-blackbox)
    - [caddy](#-caddy)
    - [cadvisor](#-cadvisor)
+   - [crontab](#-crontab)
    - [dns](#-dns)
    - [docker](#-docker)
    - [fail2ban](#-fail2ban)
@@ -23,6 +24,7 @@
    - [grafana](#-grafana)
    - [grub](#-grub)
    - [iptables](#-iptables)
+   - [journalctl](#-journalctl)
    - [lldap](#-lldap)
    - [logindefs](#-logindefs)
    - [loki](#-loki)
@@ -396,6 +398,58 @@ cadvisor_directory: "/opt/cadvisor"
 🔁 Handlers
 
 - `Restart cadvisor`: Restarts the cAdvisor container using docker-compose when configuration is updated.
+
+</details>
+
+### 📄 `crontab`
+
+<details>
+<summary>Click to expand the <code>crontab</code> role documentation</summary>
+
+Hardens system cron configuration by enforcing strict permissions on periodic cron directories on Debian systems.
+
+**✅ Features**
+
+* Secures cron execution directories by enforcing restrictive permissions
+* Reduces risk of unauthorized script execution via cron
+* Applies consistent permission policy across all periodic cron jobs
+
+**📁 Structure**
+
+```text
+crontab/
+├── meta/
+│   └── main.yml
+└── tasks/
+    └── main.yml
+```
+
+**📋 Tasks**
+
+* **Fix cron permissions**: Ensures the following cron directories are restricted to the owner (`root`) only:
+
+  * `/etc/cron.hourly`
+  * `/etc/cron.daily`
+  * `/etc/cron.weekly`
+  * `/etc/cron.monthly`
+
+```text
+Permissions applied: 0700 (rwx------)
+```
+
+**🔧 Requirements**
+
+* Cron service installed (`cron` package)
+
+**⚠️ Notes**
+
+* This role assumes all periodic cron jobs are managed by `root`.
+* Custom or user-managed cron jobs placed in these directories will no longer be accessible.
+* This role does not modify:
+
+  * `/etc/crontab`
+  * User crontabs (`crontab -e`)
+  * `/etc/cron.d/`
 
 </details>
 

@@ -1,0 +1,10 @@
+---
+- name: Fix cron permissions
+  ansible.builtin.file:
+    path: "{{ item }}"
+    mode: '0700'
+  loop:
+    - /etc/cron.hourly
+    - /etc/cron.daily
+    - /etc/cron.weekly
+    - /etc/cron.monthly
