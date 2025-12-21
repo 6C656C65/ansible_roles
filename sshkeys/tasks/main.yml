@@ -1,0 +1,19 @@
+- name: Read SSH public keys
+  ansible.builtin.set_fact:
+    ssh_keys_content: "{{ ssh_keys_content | default([]) + [lookup('file', item)] }}"
+  loop: >-
+    {{
+      lookup(
+        'fileglob',
+        (sshkeys_folder_override | default(role_path ~ '/files')) ~ '/*.pub',
+        wantlist=True
+      )
+    }}
+
+- name: Enforce SSH keys for ansible user
+  ansible.posix.authorized_key:
+    user: ansible
+    state: present
+    exclusive: true
+    key: "{{ ssh_keys_content | join('\n') }}"
+  when: ssh_keys_content | length > 0

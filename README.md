@@ -40,6 +40,7 @@
    - [snmpexporter](#-snmpexporter)
    - [squid](#-squid)
    - [sshd](#-sshd)
+   - [sshkeys](#-sshkeys)
    - [sysctl](#-sysctl)
    - [trust_ca](#-trust_ca)
    - [uptime_kuma](#-uptime_kuma)
@@ -2104,6 +2105,80 @@ motd_ascii_file: "99-ascii"
 **🔧 Requirements**
 
 - OpenSSH server must be installed (`sshd`)
+
+</details>
+
+### 📄 `sshkeys`
+
+<details>
+<summary>Click to expand the <code>sshkeys</code> role documentation</summary>
+
+Deploys and enforces SSH public keys in `authorized_keys` for a dedicated user on Debian systems.
+
+**✅ Features**
+
+* Deploys SSH public keys from `.pub` files
+* Supports an override directory for key sources
+* Enforces exclusive access (removes unmanaged keys)
+* Centralizes SSH key management via Ansible
+* Simple and deterministic key deployment
+
+**📁 Structure**
+
+```text
+sshkeys/
+├── defaults/
+│   └── main.yml
+├── files/
+│   └── example.pub
+├── meta/
+│   └── main.yml
+└── tasks/
+    └── main.yml
+```
+
+**⚙️ Defaults (`defaults/main.yml`)**
+
+```yaml
+# sshkeys_folder_override: /opt/sshkeys/keys
+```
+
+* `sshkeys_folder_override` (*optional*): Absolute path to a directory containing SSH public key files (`*.pub`).
+
+  * If not defined, keys are read from the role’s `files/` directory.
+
+**📋 Tasks**
+
+* **Read SSH public keys**:
+
+  * Collects all `.pub` files from the configured key directory
+  * Aggregates their content into a single list
+
+* **Enforce SSH keys for ansible user**:
+
+  * Deploys the collected keys to the `authorized_keys` file of the `ansible` user
+  * Uses `exclusive: true` to remove any unmanaged keys
+  * Ensures a fully declarative SSH access model
+
+**🔐 Security Behavior**
+
+* Only keys provided via Ansible will remain authorized
+* Any manual modification to `authorized_keys` will be reverted
+* If no keys are found, no changes are applied
+
+**🔧 Requirements**
+
+* `ansible` user must exist on the target system
+* `ansible.posix` collection installed
+
+```bash
+ansible-galaxy collection install ansible.posix
+```
+
+**⚠️ Notes**
+
+* Using `exclusive: true` may lock you out if no valid keys are provided.
+* Ensure SSH access is validated before applying on remote systems.
 
 </details>
 
