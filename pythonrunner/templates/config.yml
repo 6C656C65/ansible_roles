@@ -1,0 +1,51 @@
+crtsh:
+  discord_token: "XXXXXXXXXXXXXXXXXXXXXXXXXX.XXXXXX.XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+  discord_prefix: "!"
+
+dns:
+  discord_token: "XXXXXXXXXXXXXXXXXXXXXXXXXX.XXXXXX.XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+  discord_prefix: "!"
+
+rootme:
+  discord_token: "XXXXXXXXXXXXXXXXXXXXXXXXXX.XXXXXX.XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+  discord_prefix: "!"
+  api_key: XXXXXX_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+  users_uid:
+    - uid: 000000
+      pseudo: user1
+    - uid: 111111
+      pseudo: user2
+  rubriques:
+  - id: 16
+    label: Web Client
+  - id: 17
+    label: Programmation
+  - id: 18
+    label: Cryptanalyse
+  - id: 67
+    label: Steganographie
+  - id: 68
+    label: Web Serveur
+  - id: 69
+    label: Cracking
+  - id: 70
+    label: Realiste
+  - id: 182
+    label: Reseau
+  - id: 189
+    label: App-script
+  - id: 203
+    label: App-system
+  - id: 208
+    label: Forensic
+
+ssl_monitor:
+  urls:
+    - "https://example.com"
+    - "https://google.com"
+  interval: 3600
+  webhook: "https://discord.com/api/webhooks/XXXXXXXXXXXXXXXXXXX/XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX-XXXXXXXXXXXXXXXXXXXXXXXXXXX"
+  username: SSLMonitor
+  avatar_url: https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Python-logo-notext.svg/1200px-Python-logo-notext.svg.png
+  allow_self_signed: false
+  cert_expiry_threshold: 10

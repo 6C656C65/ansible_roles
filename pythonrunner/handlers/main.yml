@@ -1,0 +1,8 @@
+- name: Reload systemd
+  ansible.builtin.systemd:
+    daemon_reload: true
+
+- name: Restart pythonrunner service
+  ansible.builtin.systemd:
+    name: "{{ pythonrunner.service_name }}"
+    state: restarted

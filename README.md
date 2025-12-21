@@ -35,6 +35,7 @@
    - [promtail](#-promtail)
    - [proxmox](#-proxmox)
    - [proxy](#-proxy)
+   - [pythonrunner](#-pythonrunner)
    - [rsyslog](#-rsyslog)
    - [semaphore](#-semaphore)
    - [snmpexporter](#-snmpexporter)
@@ -1755,6 +1756,104 @@ no_proxy: "localhost,127.0.0.1,10.0.0.0/16,192.168.0.0/16,172.16.0.0/12"
 - Adds updated proxy configuration for APT
 - Updates global `/etc/environment` with proxy variables
 - Adds export lines in `/etc/bash.bashrc` for interactive shells
+
+</details>
+
+### 📄 `pythonrunner`
+
+<details>
+<summary>Click to expand the <code>pythonrunner</code> role documentation</summary>
+
+Installs and manages **PythonRunner**, a Python-based automation service, deployed as a systemd service on Debian systems.
+This role installs the Python package, deploys extensions from Git, configures the service, and ensures it runs persistently.
+
+**✅ Features**
+
+* Installs PythonRunner via `pip`
+* Deploys extensions from a Git repository
+* Manages a YAML configuration file via Jinja2 template
+* Creates and manages a dedicated systemd service
+* Automatically reloads and restarts the service on configuration changes
+* Runs the service under a non-root user
+
+**📁 Structure**
+
+```text
+pythonrunner/
+├── defaults/
+│   └── main.yml
+├── handlers/
+│   └── main.yml
+├── meta/
+│   └── main.yml
+├── tasks/
+│   └── main.yml
+├── templates/
+│   └── config.yml
+```
+
+**⚙️ Defaults (`defaults/main.yml`)**
+
+```yaml
+pythonrunner:
+  path: "/home/ansible/pythonrunner"
+  package_name: "pyrunx"
+  extensions_url: "https://github.com/6C656C65/pythonrunner-extensions.git"
+  service_name: "pythonrunner"
+  config_template: config.yml
+```
+
+* `path`: Working directory for PythonRunner and its extensions
+* `package_name`: Python package installed via `pip`
+* `extensions_url`: Git repository containing PythonRunner extensions
+* `service_name`: Name of the systemd service
+* `config_template`: Configuration template file name
+
+**📋 Tasks**
+
+* **Ensure pip is installed**: Installs `python3-pip`
+* **Install the Python package**: Installs PythonRunner using `pip`
+* **Clone extensions repository**: Deploys extensions into the working directory
+* **Deploy configuration file**: Renders and copies `config.yml`, triggers service restart
+* **Create systemd service**: Installs a custom service unit file
+* **Enable and start service**: Ensures PythonRunner starts on boot
+
+**🔁 Handlers**
+
+* **Reload systemd**: Reloads systemd daemon after service file changes
+* **Restart pythonrunner service**: Restarts the PythonRunner service
+
+```yaml
+- name: Restart pythonrunner service
+  ansible.builtin.systemd:
+    name: "{{ pythonrunner.service_name }}"
+    state: restarted
+```
+
+**📄 Systemd Service Behavior**
+
+* Runs as user: `ansible`
+* Working directory: `{{ pythonrunner.path }}`
+* Automatically restarts on failure
+* Logs stdout and stderr to `journald`
+
+```ini
+ExecStart=/usr/local/bin/pythonrunner -e extensions/rootme
+Restart=always
+```
+
+**📄 Configuration Template (`config.yml`)**
+
+* Supports multiple modules (e.g. `crtsh`, `dns`, `rootme`, `ssl_monitor`)
+* Handles secrets such as API keys and Discord tokens
+* Fully managed by Ansible (template-driven)
+
+**⚠️ Notes**
+
+* Secrets should be stored securely (Ansible Vault recommended)
+* `pip` is used with `break_system_packages: true`
+* The service execution path and extensions are currently hardcoded in the systemd unit
+* This role assumes PythonRunner exposes no network ports directly
 
 </details>
 

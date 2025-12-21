@@ -1,0 +1,6 @@
+pythonrunner:
+  path: "/home/ansible/pythonrunner"
+  package_name: "pyrunx"
+  extensions_url: "https://github.com/6C656C65/pythonrunner-extensions.git"
+  service_name: "pythonrunner"
+  config_template: config.yml

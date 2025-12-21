@@ -1,0 +1,60 @@
+---
+- name: Ensure pip is installed
+  ansible.builtin.apt:
+    name: python3-pip
+    state: present
+    update_cache: true
+
+- name: Install the Python package
+  ansible.builtin.pip:
+    name: "{{ pythonrunner.package_name }}"
+    break_system_packages: true
+    executable: pip3
+
+- name: Clone the Git repository
+  ansible.builtin.git:
+    repo: "{{ pythonrunner.extensions_url }}"
+    dest: "{{ pythonrunner.path }}/extensions"
+    version: "main"
+    force: true
+
+- name: Copy the configuration file config.yml
+  ansible.builtin.template:
+    src: "{{ pythonrunner.config_template }}"
+    dest: "{{ pythonrunner.path }}/config.yml"
+    owner: ansible
+    group: ansible
+    mode: '0644'
+  notify:
+    - Restart pythonrunner service
+
+- name: Create the systemd service
+  ansible.builtin.copy:
+    dest: "/etc/systemd/system/{{ pythonrunner.service_name }}.service"
+    mode: '0644'
+    content: |
+      [Unit]
+      Description={{ pythonrunner.service_name }} service
+      After=network.target
+      StartLimitIntervalSec=60
+      StartLimitBurst=3
+
+      [Service]
+      ExecStart=/usr/local/bin/pythonrunner -e extensions/rootme
+      WorkingDirectory={{ pythonrunner.path }}
+      Restart=always
+      RestartSec=5
+      User=ansible
+      StandardOutput=journal
+      StandardError=journal
+
+      [Install]
+      WantedBy=multi-user.target
+  notify:
+    - Reload systemd
+
+- name: Enable and start the service
+  ansible.builtin.systemd:
+    name: "{{ pythonrunner.service_name }}"
+    enabled: true
+    state: started
