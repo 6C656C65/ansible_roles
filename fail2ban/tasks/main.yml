@@ -6,11 +6,9 @@
     update_cache: true
 
 - name: Ensure jail.local exists from default jail.conf
-  ansible.builtin.copy:
+  ansible.builtin.template:
     src: "{{ fail2ban_source_file }}"
     dest: "{{ fail2ban_config_file }}"
-    remote_src: true
-    force: false
     owner: root
     group: root
     mode: '0644'
