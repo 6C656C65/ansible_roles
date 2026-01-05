@@ -16,6 +16,7 @@
    - [blackbox](#-blackbox)
    - [caddy](#-caddy)
    - [cadvisor](#-cadvisor)
+   - [convertx](#-convertx)
    - [crontab](#-crontab)
    - [dns](#-dns)
    - [docker](#-docker)
@@ -400,6 +401,109 @@ cadvisor_directory: "/opt/cadvisor"
 🔁 Handlers
 
 - `Restart cadvisor`: Restarts the cAdvisor container using docker-compose when configuration is updated.
+
+</details>
+
+### 📄 `convertx`
+
+<details>
+<summary>Click to expand the <code>convertx</code> role documentation</summary>
+
+Installs and configures **ConvertX**, a self-hosted file conversion service, using **Docker Compose** on Debian-based systems.
+
+This role deploys ConvertX as a Docker container, manages its persistent storage, and ensures the service is started automatically.
+
+## ✅ Features
+
+* Creates the directory structure for ConvertX
+* Deploys a templated `docker-compose.yml`
+* Runs ConvertX as a Docker container
+* Uses a named Docker volume for persistent data
+* Simple and minimal configuration
+
+## 📁 Directory Structure
+
+```text
+convertx/
+├── defaults/
+│   └── main.yml
+├── handlers/
+│   └── main.yml
+├── meta/
+│   └── main.yml
+├── tasks/
+│   └── main.yml
+├── templates/
+│   └── docker-compose.yml
+```
+
+## ⚙️ Default Configuration (`defaults/main.yml`)
+
+```yaml
+convertx_directory: /opt/convertx
+```
+
+### Variables
+
+* `convertx_directory`
+  Base directory where the ConvertX Docker Compose configuration is deployed.
+
+## 📋 Tasks
+
+* **Create base directory**
+  Creates the ConvertX installation directory.
+
+* **Deploy docker-compose.yml**
+  Renders and copies the Docker Compose configuration using a Jinja2 template.
+
+* **Start ConvertX**
+  Launches the ConvertX container using `docker-compose up -d`.
+
+```yaml
+- name: Start ConvertX using Docker Compose
+  ansible.builtin.command: docker-compose up -d
+  args:
+    chdir: "{{ convertx_directory }}"
+  changed_when: false
+```
+
+## 🔁 Handlers
+
+* **Restart ConvertX**
+  Restarts the ConvertX service when the Docker Compose configuration changes.
+
+```yaml
+- name: Restart ConvertX
+  ansible.builtin.command: docker-compose restart
+  args:
+    chdir: "{{ convertx_directory }}"
+  changed_when: false
+```
+
+## 🐳 Docker Configuration
+
+* Image: `ghcr.io/c4illin/convertx`
+* Container name: `convertx`
+* Restart policy: `unless-stopped`
+* Persistent data stored in a named Docker volume: `convertx-data`
+* Uses a dedicated Docker network: `convertx`
+
+```yaml
+volumes:
+  - convertx-data:/app/data
+```
+
+## 🔧 Requirements
+
+* Debian-based system
+* Docker installed
+* Docker Compose installed
+
+## ⚠️ Notes
+
+* This role does **not** expose ports by default — adjust the `docker-compose.yml` template if external access is required.
+* Data persistence is handled via a Docker named volume.
+* Service lifecycle is fully managed via Docker Compose.
 
 </details>
 

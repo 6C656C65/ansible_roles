@@ -1,0 +1,18 @@
+---
+- name: Create ConvertX base directory
+  ansible.builtin.file:
+    path: "{{ convertx_directory }}"
+    state: directory
+    mode: '0755'
+
+- name: Deploy docker-compose configuration
+  ansible.builtin.template:
+    src: docker-compose.yml
+    dest: "{{ convertx_directory }}/docker-compose.yml"
+    mode: '0644'
+
+- name: Start ConvertX using Docker Compose
+  ansible.builtin.command: docker-compose up -d
+  args:
+    chdir: "{{ convertx_directory }}"
+  changed_when: false

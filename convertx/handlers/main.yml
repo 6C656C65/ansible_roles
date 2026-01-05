@@ -1,0 +1,5 @@
+- name: Restart ConvertX
+  ansible.builtin.command: docker-compose restart
+  args:
+    chdir: "{{ convertx_directory }}"
+  changed_when: false

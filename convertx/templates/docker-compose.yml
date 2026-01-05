@@ -1,0 +1,16 @@
+services:
+  convertx:
+    image: ghcr.io/c4illin/convertx
+    container_name: convertx
+    restart: unless-stopped
+    volumes:
+      - convertx-data:/app/data
+    networks:
+      - convertx
+
+networks:
+  convertx:
+
+volumes:
+  convertx-data:
+    name: convertx-data
