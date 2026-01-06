@@ -1,0 +1,155 @@
+pfsense_aliases:
+  - name: "ALIAS_VPN"
+    address: "192.168.100.0/24"
+    type: "network"
+    descr: "VPN Network"
+  - name: "HostA"
+    address: "192.168.101.1"
+    type: "host"
+    descr: "HostA"
+  - name: "HTTP_HTTPS"
+    address: "80 443"
+    type: "port"
+    descr: "80/tcp & 443/tcp"
+  - name: "LDAP_LDAPS"
+    address: "389 636"
+    type: "port"
+    descr: "389/tcp & 636/tcp"
+
+pfsense_groups:
+  - name: "groupA"
+    descr: "Group A"
+    scope: "remote"
+    priv: ["page-all"]
+  - name: "groupB"
+    descr: "GroupB"
+    scope: "local"
+    priv: []
+
+pfsense_setup:
+  hostname: "pfsense"
+  domain: "company.com"
+  dns_addresses: 1.1.1.1 9.9.9.9
+  dns_gateways: WAN_DHCP WAN_DHCP
+  dns_hostnames: one.one.one.one dns.quad9.net
+  dnsallowoverride: false
+  dnslocalhost: remote
+  timezone: Europe/New York
+  timeservers: 2.pfsense.pool.ntp.org
+  language: en_US
+  webguicss: pfSense-dark
+
+pfsense_authserver_ldap:
+  name: LDAP
+  host: identity.company.com
+  port: 636
+  transport: ssl
+  ca: "company-root-ca"
+  protver: 3
+  timeout: 25
+  scope: subtree
+  authcn: cn=users,dc=company,dc=com
+  basedn: dc=company,dc=com
+  extended_enabled: true
+  extended_query: "|(memberOf=cn=groupA,cn=groups,dc=company,dc=com)(memberOf=cn=groupB,cn=groups,dc=company,dc=com)"
+  binddn: uid=pfsense_service,cn=users,dc=company,dc=com
+  bindpw: "changeme"
+  attr_user: uid
+  attr_group: cn
+  attr_member: memberOf
+  attr_groupobj: posixGroup
+  ldap_rfc2307: false
+  ldap_utf8: true
+  ldap_allow_unauthenticated: true
+
+pfsense_gateways:
+  - gateway: "WAN_DHCP"
+    ipprotocol: inet
+  - gateway: none
+    ipprotocol: inet6
+
+pfsense_dhcp_servers:
+  - interface: SERVER
+    enable: true
+    denyunknown: disabled
+    ignoreclientuids: false
+    range_from: 192.168.101.10
+    range_to: 192.168.101.100
+    dnsserver: 192.168.101.254
+
+pfsense_dhcp_static_hosts:
+  - netif: SERVER
+    hostname: "hostA"
+    descr: "hostA"
+    macaddr: "38:6d:1c:5a:5e:75"
+    ipaddr: "192.168.101.1"
+    state: present
+
+pfsense_interfaces:
+  - descr: WAN
+    interface: vtnet0
+    enable: true
+    ipv4_type: dhcp
+    blockbogons: true
+  - descr: SERVER
+    interface: vtnet1
+    enable: true
+    ipv4_type: static
+    ipv4_address: 192.168.101.254
+    ipv4_prefixlen: 24
+
+pfsense_log_settings:
+  logformat: rfc5424
+  reverse: true
+  nentries: 500
+  rawfilter: false
+  filterdescriptions: 1
+  disablelocallogging: false
+  nologbogons: false
+  nologdefaultblock: false
+  nologdefaultpass: false
+  nologlinklocal4: false
+  nolognginx: false
+  nologprivatenets: false
+  nologsnort2c: false
+  logfilesize: 100000000
+  logcompressiontype: none
+  rotatecount: 10
+
+pfsense_nat_port_forwards:
+  - descr: "NAT 53/udp"
+    interface: WAN
+    protocol: udp
+    source: any
+    destination: IP:WAN:53
+    target: hostA:53
+    associated_rule: associated
+    state: present
+
+pfsense_openvpn_servers:
+  - name: "VPN"
+    state: present
+    mode: server_tls_user
+    authmode: LDAP
+    dev_mode: tun
+    protocol: UDP4
+    interface: wan
+    local_port: 1194
+    tls: generate
+    tls_type: auth
+    ca: company-root-ca
+    cert: company-cert-vpn
+    cert_depth: 2
+    maxclients: 25
+    strictusercn: true
+    remote_cert_tls: true
+    tunnel_network: 192.168.100.0/24
+    local_network: "192.168.101.0/24"
+    dynamic_ip: true
+    topology: net30
+    inactive_seconds: 300
+    dns_domain: company.com
+    dns_server1: 192.168.101.254
+    custom_options: |
+      push "dhcp-option DOMAIN-SEARCH company.local"
+    exit_notify: 1

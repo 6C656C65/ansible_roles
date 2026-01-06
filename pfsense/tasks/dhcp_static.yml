@@ -1,0 +1,12 @@
+---
+- name: DHCP Static
+  pfsensible.core.pfsense_dhcp_static:
+    netif: "{{ item.netif }}"
+    hostname: "{{ item.hostname }}"
+    descr: "{{ item.descr }}"
+    macaddr: "{{ item.macaddr }}"
+    ipaddr: "{{ item.ipaddr }}"
+    state: "{{ item.state }}"
+  loop: "{{ pfsense_dhcp_static_hosts }}"
+  loop_control:
+    label: "{{ item.hostname }}"

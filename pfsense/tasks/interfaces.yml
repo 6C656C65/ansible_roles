@@ -1,0 +1,13 @@
+---
+- name: Interfaces
+  pfsensible.core.pfsense_interface:
+    descr: "{{ item.descr }}"
+    interface: "{{ item.interface }}"
+    enable: "{{ item.enable }}"
+    ipv4_type: "{{ item.ipv4_type | default(omit) }}"
+    ipv4_address: "{{ item.ipv4_address | default(omit) }}"
+    ipv4_prefixlen: "{{ item.ipv4_prefixlen | default(omit) }}"
+    blockbogons: "{{ item.blockbogons | default(omit) }}"
+  loop: "{{ pfsense_interfaces }}"
+  loop_control:
+    label: "{{ item.descr }}"

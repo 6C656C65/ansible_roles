@@ -32,6 +32,7 @@
    - [loki](#-loki)
    - [nginx](#-nginx)
    - [ntp](#-ntp)
+   - [pfsense](#-pfsense)
    - [privatebin](#-privatebin)
    - [prometheus](#-prometheus)
    - [promtail](#-promtail)
@@ -1530,6 +1531,238 @@ ntp_server: 10.0.0.254
 **🔧 Requirements**
 
 - The `ntp` or `ntpsec` service must be installed on the target machine.
+
+</details>
+
+### 📄 `pfsense`
+
+<details>
+<summary>Click to expand the <code>pfsense</code> role documentation</summary>
+
+Configures a **pfSense firewall** using Ansible and the
+[`pfsensible.core`](https://galaxy.ansible.com/pfsensible/core) collection.
+
+This role manages core pfSense components such as interfaces, aliases, groups, DHCP, LDAP authentication, NAT, logging, and OpenVPN servers in an **idempotent and declarative way**.
+
+## ✅ Features
+
+* Global pfSense system configuration (hostname, DNS, timezone, GUI theme)
+* Interface configuration (WAN, LAN, custom interfaces)
+* Alias management (hosts, networks, ports)
+* User group management
+* LDAP authentication server configuration
+* DHCP server configuration
+* DHCP static mappings
+* Gateway configuration (IPv4 / IPv6)
+* NAT port forwarding
+* Centralized log settings
+* OpenVPN server configuration
+* Fully modular tasks with tags
+
+## 📁 Directory Structure
+
+```text
+pfsense/
+├── defaults/
+│   └── main.yml
+├── meta/
+│   └── main.yml
+├── tasks/
+│   ├── aliases.yml
+│   ├── authserver_ldap.yml
+│   ├── dhcp_server.yml
+│   ├── dhcp_static.yml
+│   ├── gateways.yml
+│   ├── groups.yml
+│   ├── interfaces.yml
+│   ├── log_settings.yml
+│   ├── nat_port_forward.yml
+│   ├── openvpn_server.yml
+│   ├── setup.yml
+│   └── main.yml
+```
+
+## ⚙️ Default Configuration (`defaults/main.yml`)
+
+This role is entirely driven by variables. Below are the main configuration blocks.
+
+### 🔹 Global Setup
+
+```yaml
+pfsense_setup:
+  hostname: "pfsense"
+  domain: "company.com"
+  dns_addresses: 1.1.1.1 9.9.9.9
+  dns_gateways: WAN_DHCP WAN_DHCP
+  dns_hostnames: one.one.one.one dns.quad9.net
+  dnsallowoverride: false
+  dnslocalhost: remote
+  timezone: Europe/New York
+  timeservers: 2.pfsense.pool.ntp.org
+  language: en_US
+  webguicss: pfSense-dark
+```
+
+### 🔹 Interfaces
+
+```yaml
+pfsense_interfaces:
+  - descr: WAN
+    interface: vtnet0
+    enable: true
+    ipv4_type: dhcp
+    blockbogons: true
+  - descr: SERVER
+    interface: vtnet1
+    enable: true
+    ipv4_type: static
+    ipv4_address: 192.168.101.254
+    ipv4_prefixlen: 24
+```
+
+### 🔹 Aliases
+
+```yaml
+pfsense_aliases:
+  - name: "ALIAS_VPN"
+    address: "192.168.100.0/24"
+    type: "network"
+    descr: "VPN Network"
+```
+
+Supports `host`, `network`, and `port` aliases.
+
+### 🔹 Groups
+
+```yaml
+pfsense_groups:
+  - name: "groupA"
+    descr: "Group A"
+    scope: "remote"
+    priv: ["page-all"]
+```
+
+### 🔹 LDAP Authentication Server
+
+```yaml
+pfsense_authserver_ldap:
+  name: LDAP
+  host: identity.company.com
+  port: 636
+  transport: ssl
+  ca: company-root-ca
+  basedn: dc=company,dc=com
+  binddn: uid=pfsense_service,cn=users,dc=company,dc=com
+  bindpw: "changeme"
+```
+
+⚠️ **Secrets should be stored securely using Ansible Vault.**
+
+### 🔹 DHCP Server
+
+```yaml
+pfsense_dhcp_servers:
+  - interface: SERVER
+    enable: true
+    range_from: 192.168.101.10
+    range_to: 192.168.101.100
+```
+
+### 🔹 DHCP Static Mappings
+
+```yaml
+pfsense_dhcp_static_hosts:
+  - netif: SERVER
+    hostname: hostA
+    macaddr: 38:6d:1c:5a:5e:75
+    ipaddr: 192.168.101.1
+```
+
+### 🔹 Gateways
+
+```yaml
+pfsense_gateways:
+  - gateway: WAN_DHCP
+    ipprotocol: inet
+```
+
+### 🔹 NAT Port Forwarding
+
+```yaml
+pfsense_nat_port_forwards:
+  - descr: "NAT 53/udp"
+    interface: WAN
+    protocol: udp
+    destination: IP:WAN:53
+    target: hostA:53
+    associated_rule: associated
+    state: present
+```
+
+### 🔹 OpenVPN Server
+
+```yaml
+pfsense_openvpn_servers:
+  - name: VPN
+    mode: server_tls_user
+    authmode: LDAP
+    protocol: UDP4
+    local_port: 1194
+    tunnel_network: 192.168.100.0/24
+```
+
+Supports TLS, LDAP authentication, custom push options, DNS configuration, and more.
+
+### 🔹 Log Settings
+
+```yaml
+pfsense_log_settings:
+  logformat: rfc5424
+  nentries: 500
+  rotatecount: 10
+```
+
+## 🧩 Task Execution & Tags
+
+Each feature can be run independently using tags:
+
+```bash
+ansible-playbook site.yml --tags interfaces,dhcp_server
+```
+
+Available tags:
+
+* `setup`
+* `interfaces`
+* `aliases`
+* `groups`
+* `authserver_ldap`
+* `gateways`
+* `dhcp_server`
+* `dhcp_static`
+* `nat_port_forward`
+* `openvpn_server`
+* `log_settings`
+
+## 🔧 Requirements
+
+* pfSense 2.6+ / 23.x
+* Ansible ≥ 2.14
+* `pfsensible.core` collection
+* API access enabled on pfSense
+* Proper credentials / API token
+
+```bash
+ansible-galaxy collection install pfsensible.core
+```
+
+## ⚠️ Notes & Best Practices
+
+* This role **modifies live firewall configuration**
+* Test in a staging environment before production
+* Always use **Ansible Vault** for secrets (LDAP bind password, certs)
+* Idempotency depends on pfSense API consistency
+* Configuration order matters (interfaces → DHCP → VPN)
 
 </details>
 

@@ -1,0 +1,14 @@
+---
+- name: Global setup
+  pfsensible.core.pfsense_setup:
+    hostname: "{{ pfsense_setup.hostname }}"
+    domain: "{{ pfsense_setup.domain }}"
+    dns_addresses: "{{ pfsense_setup.dns_addresses }}"
+    dns_gateways: "{{ pfsense_setup.dns_gateways }}"
+    dns_hostnames: "{{ pfsense_setup.dns_hostnames }}"
+    dnsallowoverride: "{{ pfsense_setup.dnsallowoverride }}"
+    dnslocalhost: "{{ pfsense_setup.dnslocalhost }}"
+    timezone: "{{ pfsense_setup.timezone }}"
+    timeservers: "{{ pfsense_setup.timeservers }}"
+    language: "{{ pfsense_setup.language }}"
+    webguicss: "{{ pfsense_setup.webguicss }}"

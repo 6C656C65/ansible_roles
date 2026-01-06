@@ -1,0 +1,14 @@
+---
+- name: NAT Port Forward
+  pfsensible.core.pfsense_nat_port_forward:
+    descr: "{{ item.descr }}"
+    interface: "{{ item.interface }}"
+    protocol: "{{ item.protocol }}"
+    source: "{{ item.source }}"
+    destination: "{{ item.destination }}"
+    target: "{{ item.target }}"
+    associated_rule: "{{ item.associated_rule }}"
+    state: "{{ item.state }}"
+  loop: "{{ pfsense_nat_port_forwards }}"
+  loop_control:
+    label: "{{ item.descr }}"

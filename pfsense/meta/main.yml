@@ -1,0 +1,7 @@
+galaxy_info:
+  author: 6C656C65
+  description: "Role to configure a pfSense"
+  license: "MIT"
+  min_ansible_version: "2.14"
+
+dependencies: []

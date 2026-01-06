@@ -1,0 +1,19 @@
+---
+- name: Log settings
+  pfsensible.core.pfsense_log_settings:
+    logformat: "{{ pfsense_log_settings.logformat }}"
+    reverse: "{{ pfsense_log_settings.reverse }}"
+    nentries: "{{ pfsense_log_settings.nentries }}"
+    rawfilter: "{{ pfsense_log_settings.rawfilter }}"
+    filterdescriptions: "{{ pfsense_log_settings.filterdescriptions }}"
+    disablelocallogging: "{{ pfsense_log_settings.disablelocallogging }}"
+    nologbogons: "{{ pfsense_log_settings.nologbogons }}"
+    nologdefaultblock: "{{ pfsense_log_settings.nologdefaultblock }}"
+    nologdefaultpass: "{{ pfsense_log_settings.nologdefaultpass }}"
+    nologlinklocal4: "{{ pfsense_log_settings.nologlinklocal4 }}"
+    nolognginx: "{{ pfsense_log_settings.nolognginx }}"
+    nologprivatenets: "{{ pfsense_log_settings.nologprivatenets }}"
+    nologsnort2c: "{{ pfsense_log_settings.nologsnort2c }}"
+    logfilesize: "{{ pfsense_log_settings.logfilesize }}"
+    logcompressiontype: "{{ pfsense_log_settings.logcompressiontype }}"
+    rotatecount: "{{ pfsense_log_settings.rotatecount }}"

@@ -1,0 +1,43 @@
+- name: Set aliases
+  ansible.builtin.import_tasks: aliases.yml
+  tags: aliases
+
+- name: Add groups
+  ansible.builtin.import_tasks: groups.yml
+  tags: groups
+
+- name: Global setup
+  ansible.builtin.import_tasks: setup.yml
+  tags: setup
+
+- name: Authserver ldap
+  ansible.builtin.import_tasks: authserver_ldap.yml
+  tags: authserver_ldap
+
+- name: Gateways
+  ansible.builtin.import_tasks: gateways.yml
+  tags: gateways
+
+- name: DHCP Server
+  ansible.builtin.import_tasks: dhcp_server.yml
+  tags: dhcp_server
+
+- name: DHCP Static
+  ansible.builtin.import_tasks: dhcp_static.yml
+  tags: dhcp_static
+
+- name: Interfaces
+  ansible.builtin.import_tasks: interfaces.yml
+  tags: interfaces
+
+- name: Log settings
+  ansible.builtin.import_tasks: log_settings.yml
+  tags: log_settings
+
+- name: NAT Port Forward
+  ansible.builtin.import_tasks: nat_port_forward.yml
+  tags: nat_port_forward
+
+- name: OpenVPN Server
+  ansible.builtin.import_tasks: openvpn_server.yml
+  tags: openvpn_server

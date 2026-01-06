@@ -1,0 +1,9 @@
+---
+- name: Set aliases on Pfsense
+  pfsensible.core.pfsense_alias:
+    name: "{{ item.name }}"
+    address: "{{ item.address }}"
+    type: "{{ item.type }}"
+    descr: "{{ item.descr }}"
+    state: present
+  loop: "{{ pfsense_aliases }}"

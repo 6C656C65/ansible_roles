@@ -1,0 +1,9 @@
+---
+- name: Add groups on Pfsense
+  pfsensible.core.pfsense_group:
+    name: "{{ item.name }}"
+    descr: "{{ item.descr }}"
+    scope: "{{ item.scope }}"
+    priv: "{{ item.priv }}"
+    state: present
+  loop: "{{ pfsense_groups }}"

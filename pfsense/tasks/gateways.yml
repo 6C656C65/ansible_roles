@@ -1,0 +1,8 @@
+---
+- name: Gateways
+  pfsensible.core.pfsense_default_gateway:
+    gateway: "{{ item.gateway }}"
+    ipprotocol: "{{ item.ipprotocol }}"
+  loop: "{{ pfsense_gateways }}"
+  loop_control:
+    label: "{{ item.gateway }} / {{ item.ipprotocol }}"

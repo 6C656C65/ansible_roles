@@ -1,0 +1,13 @@
+---
+- name: DHCP Server
+  pfsensible.core.pfsense_dhcp_server:
+    interface: "{{ item.interface }}"
+    enable: "{{ item.enable }}"
+    denyunknown: "{{ item.denyunknown }}"
+    ignoreclientuids: "{{ item.ignoreclientuids }}"
+    range_from: "{{ item.range_from }}"
+    range_to: "{{ item.range_to }}"
+    dnsserver: "{{ item.dnsserver | default(omit) }}"
+  loop: "{{ pfsense_dhcp_servers }}"
+  loop_control:
+    label: "{{ item.interface }}"
