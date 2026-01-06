@@ -24,6 +24,7 @@
    - [gitea](#-gitea)
    - [grafana](#-grafana)
    - [grub](#-grub)
+   - [homepage](#-homepage)
    - [iptables](#-iptables)
    - [journalctl](#-journalctl)
    - [lldap](#-lldap)
@@ -899,6 +900,125 @@ grub-mkpasswd-pbkdf2
   - `usb_storage`
   - `firewire_core`
   - `firewire_ohci`
+
+</details>
+
+### 📄 `homepage`
+
+<details>
+<summary>Click to expand the <code>homepage</code> role documentation</summary>
+
+Installs and configures **Homepage** ([gethomepage.dev](https://gethomepage.dev)), a modern self-hosted dashboard for services and bookmarks, using **Docker Compose** on Debian-based systems.
+
+This role deploys Homepage as a Docker container, manages its configuration files and custom icons, and ensures the service is started automatically.
+
+## ✅ Features
+
+* Creates the directory structure for Homepage
+* Deploys a templated `docker-compose.yml`
+* Deploys Homepage configuration files (`services`, `bookmarks`, `widgets`, `settings`)
+* Supports custom icons
+* Allows overriding default configuration files
+* Runs Homepage as a Docker container via Docker Compose
+
+## 📁 Directory Structure
+
+```text
+homepage/
+├── defaults/
+│   └── main.yml
+├── files/
+│   ├── config/
+│   │   ├── bookmarks.yaml
+│   │   ├── services.yaml
+│   │   ├── settings.yaml
+│   │   └── widgets.yaml
+│   └── icons/
+│       └── service_b.svg
+├── handlers/
+│   └── main.yml
+├── meta/
+│   └── main.yml
+├── tasks/
+│   └── main.yml
+├── templates/
+│   └── docker-compose.yml
+```
+
+## ⚙️ Default Configuration (`defaults/main.yml`)
+
+```yaml
+homepage_directory: /opt/homepage
+# homepage_files_override: ./homepage_files
+```
+
+### Variables
+
+* `homepage_directory`
+  Base directory where Homepage is installed.
+
+* `homepage_files_override` *(optional)*
+  Path to a custom directory containing Homepage configuration files (`config/`, `icons/`).
+  If not set, the role uses the default files shipped with the role.
+
+## 📋 Tasks
+
+* **Create directory structure**
+  Creates base, config, and icons directories.
+
+* **Deploy docker-compose.yml**
+  Renders and copies the Docker Compose configuration template.
+
+* **Copy configuration files**
+  Copies Homepage configuration files and icons to the target host.
+  Triggers a service restart when files change.
+
+* **Start Homepage**
+  Launches Homepage using `docker-compose up -d`.
+
+```yaml
+- name: Start HomePage using Docker Compose
+  ansible.builtin.command: docker-compose up -d
+  args:
+    chdir: "{{ homepage_directory }}"
+  changed_when: false
+```
+
+## 🔁 Handlers
+
+* **Restart HomePage**
+  Restarts the Homepage container when configuration files change.
+
+```yaml
+- name: Restart HomePage
+  ansible.builtin.command: docker-compose restart
+  args:
+    chdir: "{{ homepage_directory }}"
+  changed_when: false
+```
+
+## 🐳 Docker Configuration
+
+* Image: `ghcr.io/gethomepage/homepage:latest`
+* Container name: `homepage`
+* Restart policy: `unless-stopped`
+* Mounted volumes:
+
+  * `./config` → `/app/config`
+  * `./icons` → `/app/public/icons`
+* Environment variables:
+
+  * `HOMEPAGE_ALLOWED_HOSTS`
+
+## ⚠️ Notes
+
+* Homepage configuration files are **static YAML files** and not templated by default.
+* To customize configuration:
+
+  * copy the `files/` directory
+  * set `homepage_files_override` to your custom path
+* Network exposure (ports, reverse proxy) must be handled externally.
+* The role assumes Docker networking is sufficient for service access.
 
 </details>
 

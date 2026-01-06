@@ -1,0 +1,12 @@
+---
+# For configuration options and examples, please see:
+# https://gethomepage.dev/configs/services/
+
+- My Services:
+    - Service A:
+        href: https://service.a.company.com/
+        description: First service
+    - Service B:
+        href: https://service.b.company.com/
+        description: Second service
+        icon: /icons/service_b.svg

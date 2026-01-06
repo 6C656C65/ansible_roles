@@ -1,0 +1,8 @@
+---
+# For configuration options and examples, please see:
+# https://gethomepage.dev/configs/settings/
+
+title: Example Homepage
+
+base: https://home.company.com
+hideVersion: true

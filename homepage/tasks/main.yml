@@ -1,0 +1,29 @@
+---
+- name: Create HomePage base directory
+  ansible.builtin.file:
+    path: "{{ homepage_directory }}{{ item.name }}"
+    state: directory
+    mode: '0755'
+  with_items:
+    - { name: "/" }
+    - { name: "/config" }
+    - { name: "/icons" }
+
+- name: Deploy docker-compose configuration
+  ansible.builtin.template:
+    src: docker-compose.yml
+    dest: "{{ homepage_directory }}/docker-compose.yml"
+    mode: '0644'
+
+- name: Copy all homepage files
+  ansible.builtin.copy:
+    src: "{{ homepage_files_override | default(role_path ~ '/files') }}"
+    dest: "{{ homepage_directory }}"
+    mode: '0644'
+  notify: Restart HomePage
+
+- name: Start HomePage using Docker Compose
+  ansible.builtin.command: docker-compose up -d
+  args:
+    chdir: "{{ homepage_directory }}"
+  changed_when: false

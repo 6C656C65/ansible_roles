@@ -1,0 +1,15 @@
+services:
+  homepage:
+    image: ghcr.io/gethomepage/homepage:latest
+    container_name: homepage
+    restart: unless-stopped
+    volumes:
+      - ./config:/app/config
+      - ./icons:/app/public/icons/
+    environment:
+      HOMEPAGE_ALLOWED_HOSTS: welcome.local
+    networks:
+      - homepage
+
+networks:
+  homepage:
