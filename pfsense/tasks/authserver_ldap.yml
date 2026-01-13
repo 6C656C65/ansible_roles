@@ -24,4 +24,3 @@
     ldap_allow_unauthenticated: "{{ pfsense_authserver_ldap.ldap_allow_unauthenticated | default(omit) }}"
     state: present
   when: pfsense_authserver_ldap | length > 0
-
