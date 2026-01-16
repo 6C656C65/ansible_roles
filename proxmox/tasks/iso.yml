@@ -19,25 +19,12 @@
   become: true
   changed_when: false
 
-- name: Rename ISO file with current date and time
-  ansible.builtin.command: >
-    mv "{{ build.out }}" "{{ build.out | regex_replace('\.iso$', '') }}_{{ lookup('pipe', 'date +%Y%m%d_%H%M%S') }}.iso"
-  args:
-    chdir: "{{ custom_iso_path }}"
-  register: iso_rename
-  delegate_to: localhost
-  changed_when: false
-
-- name: Set fact with renamed ISO path
-  ansible.builtin.set_fact:
-    renamed_iso: "{{ build.out | regex_replace('\\.iso$', '') }}_{{ lookup('pipe', 'date +%Y%m%d_%H%M%S') }}.iso"
-
 - name: Run custom_iso/upload/proxmox.sh
   ansible.builtin.command: >
     {{ custom_iso_path }}/upload/proxmox.sh
     url="{{ deploy.proxmox_host }}"
     nodes="{{ deploy.proxmox_nodes }}"
-    iso="{{ renamed_iso }}"
+    iso="{{ build.out }}"
     token-id="{{ deploy.token_id }}"
     token-secret="{{ vault_proxmox_root_ansible }}"
   args:

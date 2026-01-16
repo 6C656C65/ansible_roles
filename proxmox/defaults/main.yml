@@ -30,7 +30,7 @@ vm_list:
     memory: 2048
     cores: 1
     sockets: 1
-    disk_size: 60
+    disk_size: "local-lvm:60"
     bridge: "vmbr0"
     mac_address: "02:9c:ae:d9:34:aa"
     iso_path: "{{ build.out }}"
@@ -39,7 +39,7 @@ vm_list:
     memory: 2048
     cores: 1
     sockets: 1
-    disk_size: 100
+    disk_size: "local-lvm:100"
     description: "My description"
     tags:
       - "My tag"

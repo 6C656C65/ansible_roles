@@ -13,7 +13,7 @@
     description: "{{ item.description | default(omit) }}"
     tags: "{{ item.tags | default(omit) }}"
     scsi:
-      scsi0: 'local-lvm:{{ item.disk_size }}'
+      scsi0: '{{ item.disk_size }}'
     scsihw: "virtio-scsi-single"
     net:
       net0: "macaddr={{ item.mac_address }},virtio,bridge={{ item.bridge }},firewall=1"
@@ -24,4 +24,4 @@
     ostype: "l26"
     agent: 1
     state: present
-  loop: "{{ vm_list }}"
+  loop: "{{ vm_list[proxmox_target] }}"
