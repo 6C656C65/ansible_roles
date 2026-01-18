@@ -13,7 +13,6 @@ services:
 {% endif %}
       - squid-cache:/var/spool/squid
       - ./squid:/etc/squid/
-      - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
     ulimits:
       nofile:
