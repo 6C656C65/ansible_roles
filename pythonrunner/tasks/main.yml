@@ -10,6 +10,9 @@
     name: "{{ pythonrunner.package_name }}"
     break_system_packages: true
     executable: pip3
+  environment:
+    http_proxy: '{{ pythonrunner.http_proxy }}'
+    https_proxy: '{{ pythonrunner.https_proxy }}'
 
 - name: Clone the Git repository
   ansible.builtin.git:

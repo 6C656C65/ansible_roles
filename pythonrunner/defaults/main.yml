@@ -4,3 +4,5 @@ pythonrunner:
   extensions_url: "https://github.com/6C656C65/pythonrunner-extensions.git"
   service_name: "pythonrunner"
   config_template: config.yml
+  http_proxy: "http://proxy.company.com:3128"
+  https_proxy: "https://proxy.company.com:3128"
