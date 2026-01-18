@@ -20,6 +20,9 @@
     dest: "{{ pythonrunner.path }}/extensions"
     version: "main"
     force: true
+  environment:
+    http_proxy: '{{ pythonrunner.http_proxy }}'
+    https_proxy: '{{ pythonrunner.https_proxy }}'
 
 - name: Copy the configuration file config.yml
   ansible.builtin.template:
