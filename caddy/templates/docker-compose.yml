@@ -2,7 +2,8 @@
 {% set ip_2019 = caddy_listen_ip_2019 | default('0.0.0.0') %}
 
 {% set networks = backend[inventory_hostname] | selectattr('network', 'defined') | list %}
-{% set volumes = backend[inventory_hostname] | selectattr('volume', 'defined') | list %} 
+{% set volumes = backend[inventory_hostname] | selectattr('volume', 'defined') | list %}
+{% set environments = backend[inventory_hostname] | selectattr('environment', 'defined') | list %}
 
 services:
   caddy:
@@ -18,6 +19,12 @@ services:
 {% for item in volumes %}
       - {{ item.volume }}
 {% endfor %}
+{% if environments | length > 0 %}
+    environment:
+{% for item in environments %}
+      - {{ item.environment }}
+{% endfor %}
+{% endif %}
     ports:
       - "{{ ip_80_443 }}:80:80"
       - "{{ ip_80_443 }}:443:443"

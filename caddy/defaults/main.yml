@@ -30,6 +30,9 @@ backend:
   hostA:
     - domain: example.local
       network: example_net
+      environment:
+        - FOO=bar
+        - BAR=baz
       backend: |
         reverse_proxy backend:80
         log {
