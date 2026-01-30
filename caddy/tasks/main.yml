@@ -13,7 +13,8 @@
         mode: '0755'
       with_items:
         - { name: "/" }
-        - { name: "/certs" }
+        - { name: "/certs", when: caddy_copy_certs | bool }
+      when: item.when | default(true)
 
     - name: Copy host-specific docker-compose.yml
       ansible.builtin.template:
@@ -33,6 +34,7 @@
         src: "{{ (caddy_cert_source_override | default(role_path ~ '/files')) ~ '/' }}/"
         dest: "{{ caddy_directory }}/certs/"
         mode: '0644'
+      when: caddy_copy_certs | default(false) | bool
       notify: Restart caddy docker
 
     - name: Start caddy service

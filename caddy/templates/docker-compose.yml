@@ -12,10 +12,12 @@ services:
     restart: unless-stopped
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile
-      - ./certs/:/data/caddy/pki/authorities/local/
       - /var/log/caddy:/var/log/caddy
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
+{% if caddy_copy_certs | default(false) | bool %}
+      - ./certs/:/data/caddy/pki/authorities/local/
+{% endif %}
 {% for item in volumes %}
       - {{ item.volume }}
 {% endfor %}

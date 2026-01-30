@@ -320,12 +320,19 @@ caddy/
 caddy_directory: /opt/caddy
 # caddy_cert_source_override: /opt/caddy/certs
 
+# Whether to copy and mount custom TLS certificates
+caddy_copy_certs: false
+
+# Optional override for the source directory containing certificates
+# caddy_cert_source_override: /opt/caddy/certs
+
 backend:
   hostA:
     ...
 ```
 
 * `caddy_directory`: Path where Caddy configuration and Docker setup are deployed.
+* `caddy_copy_certs` (*optional, default: `false`*) : Controls whether custom TLS certificates are copied and mounted into the Caddy container.
 * `caddy_cert_source_override` (*optional*): Override the source directory for certificates.
 * `backend`: Per-host domain configuration block with custom reverse proxy and logging logic (templated).
 

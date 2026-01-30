@@ -3,6 +3,7 @@ caddy_directory: /opt/caddy
 # caddy_listen_ip_80_443: 0.0.0.0
 # caddy_listen_ip_2019: 0.0.0.0
 
+caddy_copy_certs: false
 caddy_global: |
   {
     skip_install_trust
