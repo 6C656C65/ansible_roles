@@ -22,7 +22,9 @@ services:
 {% if environments | length > 0 %}
     environment:
 {% for item in environments %}
-      - {{ item.environment }}
+{% for env in item.environment %}
+      - {{ env }}
+{% endfor %}
 {% endfor %}
 {% endif %}
     ports:
